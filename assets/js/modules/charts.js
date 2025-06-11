@@ -1,7 +1,7 @@
-import Chart from '../vendor/chart.esm.js';
-import { GaugeController } from '../vendor/chartjs-gauge.esm.js';
+import { Chart, registerables } from '../vendor/chart.esm.js';
+import '../vendor/chartjs-gauge.esm.js';
 
-Chart.register(GaugeController);
+Chart.register(...registerables);
 
 export function renderEthBtc(ctx, labels, ratios, onComplete) {
   return new Chart(ctx, {
