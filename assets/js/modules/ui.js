@@ -80,9 +80,9 @@ export function renderNews(items) {
   setUpdated('news-updated');
 }
 
-export function setUpdated(id) {
+export function setUpdated(id, date = new Date()) {
   const el = document.getElementById(id);
-  if (el) el.textContent = `Actualizado: ${new Date().toLocaleTimeString()}`;
+  if (el) el.textContent = `Actualizado: ${new Date(date).toLocaleTimeString()}`;
 }
 
 export function renderFngGauge(data) {
