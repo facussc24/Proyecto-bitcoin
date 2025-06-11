@@ -31,10 +31,12 @@ HTMLCanvasElement.prototype.getContext = jest.fn();
 
   test('fetchRayData draws charts', async () => {
     const ray = { prices: [[1, 1]], total_volumes: [[1, 100]] };
-    const serum = { prices: [[1, 0]], total_volumes: [[1, 50]] };
+    const cake = { total_volumes: [[1, 150]] };
+    const cetus = { total_volumes: [[1, 50]] };
     fetch
-      .mockResolvedValueOnce({ json: () => Promise.resolve(ray) })
-      .mockResolvedValueOnce({ json: () => Promise.resolve(serum) });
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(ray) })
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(cake) })
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(cetus) });
     global.Chart = jest.fn();
     document.body.innerHTML = '<canvas id="rayPriceChart"></canvas><canvas id="rayVolumeChart"></canvas>';
     await fetchRayData();

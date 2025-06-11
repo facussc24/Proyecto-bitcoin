@@ -124,17 +124,33 @@ export async function fetchRayData() {
   if (!priceCanvas || !volumeCanvas) return;
 
   try {
-    const [rayRes, serumRes] = await Promise.all([
-      fetch('https://api.coingecko.com/api/v3/coins/raydium/market_chart?vs_currency=usd&days=30&interval=daily'),
-      fetch('https://api.coingecko.com/api/v3/coins/serum/market_chart?vs_currency=usd&days=30&interval=daily')
+    const [rayRes, cakeRes, cetusRes] = await Promise.all([
+      fetch(
+        'https://api.coingecko.com/api/v3/coins/raydium/market_chart?vs_currency=usd&days=30&interval=daily'
+      ),
+      fetch(
+        'https://api.coingecko.com/api/v3/coins/pancakeswap-token/market_chart?vs_currency=usd&days=30&interval=daily'
+      ),
+      fetch(
+        'https://api.coingecko.com/api/v3/coins/cetus-protocol/market_chart?vs_currency=usd&days=30&interval=daily'
+      )
     ]);
-    const rayJson = await rayRes.json();
-    const serumJson = await serumRes.json();
 
-    const labels = rayJson.prices.map(p => new Date(p[0]).toISOString().split('T')[0]);
+    if (!rayRes.ok) throw new Error('Failed to fetch RAY data');
+    if (!cakeRes.ok) throw new Error('Failed to fetch CAKE data');
+    if (!cetusRes.ok) throw new Error('Failed to fetch CETUS data');
+
+    const rayJson = await rayRes.json();
+    const cakeJson = await cakeRes.json();
+    const cetusJson = await cetusRes.json();
+
+    const labels = rayJson.prices.map(p =>
+      new Date(p[0]).toISOString().split('T')[0]
+    );
     const rayPrices = rayJson.prices.map(p => p[1]);
     const rayVolumes = rayJson.total_volumes.map(v => v[1]);
-    const serumVolumes = serumJson.total_volumes.map(v => v[1]);
+    const cakeVolumes = cakeJson.total_volumes.map(v => v[1]);
+    const cetusVolumes = cetusJson.total_volumes.map(v => v[1]);
 
     const sma = rayPrices.map((_, idx, arr) => {
       const start = Math.max(0, idx - 6);
@@ -155,13 +171,18 @@ export async function fetchRayData() {
       options: { maintainAspectRatio: true }
     });
 
+    const avg = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+
     new Chart(volumeCanvas.getContext('2d'), {
-      type: 'line',
+      type: 'bar',
       data: {
-        labels,
+        labels: ['RAY', 'CAKE', 'CETUS'],
         datasets: [
-          { label: 'RAY Volumen', data: rayVolumes, borderColor: '#6610f2', tension: 0.1, fill: false },
-          { label: 'SRM Volumen', data: serumVolumes, borderColor: '#d63384', tension: 0.1, fill: false }
+          {
+            label: 'Promedio Volumen 30d',
+            data: [avg(rayVolumes), avg(cakeVolumes), avg(cetusVolumes)],
+            backgroundColor: ['#6610f2', '#f3ba2f', '#20c997']
+          }
         ]
       },
       options: { maintainAspectRatio: true }
