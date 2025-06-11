@@ -36,7 +36,7 @@ npm test
 - **Bootswatch** (Cerulean theme) [`bootswatch@5.3.2`](https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/cerulean/bootstrap.min.css)
 - **Bootstrap JS** [`bootstrap@5.3.2`](https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js)
 - **Chart.js** [`chart.js@3.9.1`](https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js)
-- **chartjs-gauge-v3** [`chartjs-gauge-v3@3.0.0`](https://cdn.jsdelivr.net/npm/chartjs-gauge-v3@3.0.0/dist/chartjs-gauge.min.js)
+- **chartjs-gauge-v3** [`chartjs-gauge-v3@3.0.0`](https://cdn.jsdelivr.net/npm/chartjs-gauge-v3@3.0.0/dist/index.min.js)
 
 The gauge showing the Fear & Greed index relies on this plugin and is loaded automatically from the CDN when you open `index.html`.
 
