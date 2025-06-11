@@ -2,6 +2,8 @@
 
 This project contains a small dashboard (`index.html`) that displays Bitcoin price data, the Fear & Greed index, an ETH/BTC chart and a news feed. The page uses **Bootswatch** for styling and **Chart.js** for the BTC chart. JavaScript code lives in `src/dashboard.js`.
 
+The layout now includes a responsive navbar, a hero banner and a footer. Custom styles and images live under the `assets/` folder.
+
 ## Running locally
 
 1. Install dependencies:
@@ -31,6 +33,7 @@ npm test
 ## Dependencies
 
 - **Bootswatch** (Cerulean theme) [`bootswatch@5.3.2`](https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/cerulean/bootstrap.min.css)
+- **Bootstrap JS** [`bootstrap@5.3.2`](https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js)
 - **Chart.js** [`chart.js@3.9.1`](https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js)
 
 ## Customizing API endpoints
@@ -41,3 +44,20 @@ The dashboard uses several public APIs. You can change them inside `src/dashboar
 - **Bitcoin prices**: `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily`
 - **News feed**: `https://api.rss2json.com/v1/api.json?rss_url=https://www.reddit.com/r/raydium/.rss`
 
+## Adding images
+
+Place your images in the `assets/img/` directory and reference them from HTML or CSS using a relative path, e.g. `assets/img/my-photo.jpg`.
+The default logo and hero background are provided only as Base64 text files so that no binary files are tracked in Git.
+
+### Extracting provided images
+
+Some platforms do not allow binary files to be checked in directly. For that case,
+the repository also includes the images encoded as Base64 text (`logo.txt` and
+`hero-bg.txt`). Run the helper script to decode them:
+
+```bash
+scripts/extract_assets.sh
+```
+
+After running the script you will have `logo.png` and `hero-bg.jpg` in
+`assets/img/` ready to use.
