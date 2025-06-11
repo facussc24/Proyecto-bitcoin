@@ -58,6 +58,8 @@ export function renderGauge(ctx, value, onComplete) {
     },
     options: {
       responsive: true,
+      rotation: 180,
+      circumference: 180,
       needle: { radiusPercentage: 2, widthPercentage: 3, lengthPercentage: 80 },
       valueLabel: { display: false },
       trackColor: '#343a40',
