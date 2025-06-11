@@ -60,11 +60,11 @@ The default logo and hero background are provided only as Base64 text files so t
 
 Some platforms do not allow binary files to be checked in directly. For that case,
 the repository also includes the images encoded as Base64 text (`logo.txt` and
-`hero-bg.txt`). Run the helper script to decode them:
+`hero-bg.txt`). Decode them with the npm script:
 
 ```bash
-scripts/extract_assets.sh
+npm run extract-assets
 ```
 
-After running the script you will have `logo.png` and `hero-bg.jpg` in
-`assets/img/` ready to use.
+After running the script you will have `assets/img/logo.png` and `assets/img/hero-bg.jpg`
+ready to use.
