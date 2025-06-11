@@ -7,6 +7,7 @@ describe('dashboard functions', () => {
     global.fetch = jest.fn();
     document.body.innerHTML = '';
 HTMLCanvasElement.prototype.getContext = jest.fn();
+    localStorage.clear();
   });
 
   test('fetchGoogleNews populates list with items', async () => {
@@ -59,5 +60,33 @@ HTMLCanvasElement.prototype.getContext = jest.fn();
     const result = await fetchSnapshot();
     expect(result).toEqual(data);
     expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  test('updateTicker caches data and reuses pending request', async () => {
+    jest.resetModules();
+    const { updateTicker } = await import('../dashboard.js');
+    const prices = { bitcoin: { usd: 1 }, ethereum: { usd: 2 }, raydium: { usd: 3 } };
+    let resolveFetch;
+    fetch.mockReturnValue(new Promise(r => { resolveFetch = r; }));
+    document.body.innerHTML = '<div id="btc-price"></div><div id="eth-price"></div><div id="ray-price"></div>';
+    const p1 = updateTicker();
+    updateTicker();
+    expect(fetch).toHaveBeenCalledTimes(1);
+    resolveFetch({ ok: true, json: () => Promise.resolve(prices) });
+    await p1;
+    expect(localStorage.getItem('ticker-cache')).toBe(JSON.stringify(prices));
+  });
+
+  test('updateTicker falls back to cached values on error', async () => {
+    jest.resetModules();
+    const { updateTicker } = await import('../dashboard.js');
+    const cached = { bitcoin: { usd: 10 }, ethereum: { usd: 20 }, raydium: { usd: 30 } };
+    localStorage.setItem('ticker-cache', JSON.stringify(cached));
+    fetch.mockRejectedValue(new Error('fail'));
+    document.body.innerHTML = '<div id="btc-price"></div><div id="eth-price"></div><div id="ray-price"></div>';
+    await updateTicker();
+    expect(document.getElementById('btc-price').textContent).toBe('BTC: $10');
+    expect(document.getElementById('eth-price').textContent).toBe('ETH: $20');
+    expect(document.getElementById('ray-price').textContent).toBe('RAY: $30');
   });
 });

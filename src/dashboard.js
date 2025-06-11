@@ -335,29 +335,67 @@ export function initTradingView() {
   });
 }
 
+let lastTickerData = null;
+let tickerPromise = null;
+
+function displayTicker(data) {
+  const btcEl = document.getElementById('btc-price');
+  const ethEl = document.getElementById('eth-price');
+  const rayEl = document.getElementById('ray-price');
+  if (btcEl) btcEl.textContent = `BTC: $${data.bitcoin.usd}`;
+  if (ethEl) ethEl.textContent = `ETH: $${data.ethereum.usd}`;
+  if (rayEl) rayEl.textContent = `RAY: $${data.raydium.usd}`;
+}
+
 export async function updateTicker() {
-  try {
-    const res = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,raydium&vs_currencies=usd',
-      { cache: 'no-store' }
-    );
-    if (!res.ok) throw new Error('Failed to fetch prices');
-    const data = await res.json();
-    const btcEl = document.getElementById('btc-price');
-    const ethEl = document.getElementById('eth-price');
-    const rayEl = document.getElementById('ray-price');
-    if (btcEl) btcEl.textContent = `BTC: $${data.bitcoin.usd}`;
-    if (ethEl) ethEl.textContent = `ETH: $${data.ethereum.usd}`;
-    if (rayEl) rayEl.textContent = `RAY: $${data.raydium.usd}`;
-  } catch (err) {
-    console.error('Error updating ticker', err);
-  }
+  if (tickerPromise) return tickerPromise;
+  const req = (async () => {
+    try {
+      const res = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,raydium&vs_currencies=usd',
+        { cache: 'no-store' }
+      );
+      if (!res.ok) throw new Error('Failed to fetch prices');
+      const data = await res.json();
+      lastTickerData = data;
+      try {
+        localStorage.setItem('ticker-cache', JSON.stringify(data));
+      } catch (e) {
+        console.warn('Failed to cache ticker', e);
+      }
+      displayTicker(data);
+    } catch (err) {
+      console.error('Error updating ticker', err);
+      if (!lastTickerData) {
+        try {
+          const stored = localStorage.getItem('ticker-cache');
+          if (stored) lastTickerData = JSON.parse(stored);
+        } catch (e) {
+          console.warn('Failed to read cached ticker', e);
+        }
+      }
+      if (lastTickerData) displayTicker(lastTickerData);
+    } finally {
+      tickerPromise = null;
+    }
+  })();
+  tickerPromise = req;
+  return req;
 }
 
 function initDashboard() {
   if (document.getElementById('price-ticker')) {
+    try {
+      const cached = localStorage.getItem('ticker-cache');
+      if (cached) {
+        lastTickerData = JSON.parse(cached);
+        displayTicker(lastTickerData);
+      }
+    } catch (e) {
+      console.warn('Failed to load cached ticker', e);
+    }
     updateTicker();
-    setInterval(updateTicker, 1000);
+    setInterval(updateTicker, 10000);
   }
   fetchBtcAndFng();
   fetchRayData();
