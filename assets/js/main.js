@@ -1,6 +1,6 @@
 import { fetchSnapshot, fetchEthBtc, fetchVolumes, fetchGauge, fetchNews } from './modules/api.js';
-import { renderEthBtc, renderVolumes, renderGauge } from './modules/charts.js';
-import { initLoader, renderSnapshot, renderNews, showError } from './modules/ui.js';
+import { renderEthBtc, renderVolumes } from './modules/charts.js';
+import { initLoader, renderSnapshot, renderNews, showError, renderFngGauge } from './modules/ui.js';
 
 function start() {
   const tick = initLoader(5);
@@ -30,7 +30,7 @@ function start() {
       .finally(tick),
 
     fetchGauge()
-      .then(data => renderGauge(document.getElementById('fngGauge'), data))
+      .then(renderFngGauge)
       .catch(() => showError('fng-error', 'Datos no disponibles'))
       .finally(tick),
 

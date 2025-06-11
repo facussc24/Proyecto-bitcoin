@@ -77,4 +77,26 @@ export function renderNews(items) {
     li.innerHTML = `<a href="${it.link}" target="_blank">${it.title}</a> <small class="text-muted d-block">${date}</small>`;
     list.appendChild(li);
   });
+  setUpdated('news-updated');
+}
+
+export function setUpdated(id) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = `Actualizado: ${new Date().toLocaleTimeString()}`;
+}
+
+export function renderFngGauge(data) {
+  const bar = document.getElementById('fng-bar');
+  const label = document.getElementById('fng-label');
+  if (!bar || !label) return;
+  const { value, classification } = typeof data === 'object' ? data : { value: data, classification: '' };
+  bar.style.width = `${value}%`;
+  let color = '#0d6efd';
+  if (value < 25) color = '#dc3545';
+  else if (value < 50) color = '#fd7e14';
+  else if (value < 75) color = '#ffc107';
+  else color = '#198754';
+  bar.style.backgroundColor = color;
+  label.textContent = classification ? `${classification} (${value})` : value;
+  setUpdated('fng-updated');
 }

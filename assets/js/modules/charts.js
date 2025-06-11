@@ -1,10 +1,10 @@
 import { Chart, registerables } from '../vendor/chart.esm.js';
-import '../vendor/chartjs-gauge.esm.js';
+import { setUpdated } from './ui.js';
 
 Chart.register(...registerables);
 
 export function renderEthBtc(ctx, labels, ratios, onComplete) {
-  return new Chart(ctx, {
+  const chart = new Chart(ctx, {
     type: 'line',
     data: {
       labels,
@@ -28,10 +28,12 @@ export function renderEthBtc(ctx, labels, ratios, onComplete) {
       },
     },
   });
+  setUpdated('ethbtc-updated');
+  return chart;
 }
 
 export function renderVolumes(ctx, labels, datasets, onComplete) {
-  return new Chart(ctx, {
+  const chart = new Chart(ctx, {
     type: 'line',
     data: { labels, datasets },
     options: {
@@ -41,34 +43,6 @@ export function renderVolumes(ctx, labels, datasets, onComplete) {
       scales: { y: { title: { display: true, text: 'Volumen (USD)' } } },
     },
   });
-}
-
-export function renderGauge(ctx, data, onComplete) {
-  const { value, classification } = typeof data === 'object' ? data : { value: data, classification: '' };
-  const chart = new Chart(ctx, {
-    type: 'gauge',
-    data: {
-      datasets: [
-        {
-          value,
-          data: [20, 20, 20, 20, 20],
-          minValue: 0,
-          backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#198754', '#0d6efd'],
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      rotation: -90,
-      circumference: 180,
-      needle: { radiusPercentage: 2, widthPercentage: 3, lengthPercentage: 80 },
-      valueLabel: { display: true },
-      trackColor: '#343a40',
-      plugins: { legend: { display: false } },
-      animation: { onComplete },
-    },
-  });
-  const label = document.getElementById('fng-label');
-  if (label) label.textContent = classification ? `${classification} (${value})` : value;
+  setUpdated('volume-updated');
   return chart;
 }
