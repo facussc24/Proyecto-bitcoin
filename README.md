@@ -49,7 +49,7 @@ Coloca tus imágenes en `assets/img/` y refiérete a ellas desde HTML o CSS con 
 Si tu plataforma no permite almacenar binarios en el repositorio, ejecuta el siguiente script para decodificar los archivos `logo.txt` y `hero-bg.txt`:
 
 ```bash
-scripts/extract_assets.sh
+bash scripts/extract_assets.sh
 ```
 
 Después de correr el script obtendrás `logo.png` y `hero-bg.jpg` en `assets/img/` listos para usar.
