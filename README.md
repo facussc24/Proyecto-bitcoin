@@ -46,6 +46,8 @@ npm test
 API requests are performed through a helper that retries failed fetches up to
 two times with a short delay. All exported functions in `api.js` use this helper
 so that temporary network issues are automatically mitigated.
+Ticker prices are cached in `localStorage` so the last known values are shown
+if a refresh fails.
 
 ## Available scripts
 
