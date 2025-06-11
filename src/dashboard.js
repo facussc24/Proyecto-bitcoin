@@ -118,6 +118,59 @@ export async function fetchGoogleNews() {
   }
 }
 
+export async function fetchRayData() {
+  const priceCanvas = document.getElementById('rayPriceChart');
+  const volumeCanvas = document.getElementById('rayVolumeChart');
+  if (!priceCanvas || !volumeCanvas) return;
+
+  try {
+    const [rayRes, serumRes] = await Promise.all([
+      fetch('https://api.coingecko.com/api/v3/coins/raydium/market_chart?vs_currency=usd&days=30&interval=daily'),
+      fetch('https://api.coingecko.com/api/v3/coins/serum/market_chart?vs_currency=usd&days=30&interval=daily')
+    ]);
+    const rayJson = await rayRes.json();
+    const serumJson = await serumRes.json();
+
+    const labels = rayJson.prices.map(p => new Date(p[0]).toISOString().split('T')[0]);
+    const rayPrices = rayJson.prices.map(p => p[1]);
+    const rayVolumes = rayJson.total_volumes.map(v => v[1]);
+    const serumVolumes = serumJson.total_volumes.map(v => v[1]);
+
+    const sma = rayPrices.map((_, idx, arr) => {
+      const start = Math.max(0, idx - 6);
+      const slice = arr.slice(start, idx + 1);
+      const sum = slice.reduce((a, b) => a + b, 0);
+      return sum / slice.length;
+    });
+
+    new Chart(priceCanvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'RAY Precio (USD)', data: rayPrices, borderColor: '#6610f2', tension: 0.1, fill: false },
+          { label: 'SMA 7d', data: sma, borderColor: '#20c997', borderDash: [5,5], tension: 0.1, fill: false }
+        ]
+      },
+      options: { maintainAspectRatio: true }
+    });
+
+    new Chart(volumeCanvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'RAY Volumen', data: rayVolumes, borderColor: '#6610f2', tension: 0.1, fill: false },
+          { label: 'SRM Volumen', data: serumVolumes, borderColor: '#d63384', tension: 0.1, fill: false }
+        ]
+      },
+      options: { maintainAspectRatio: true }
+    });
+  } catch (err) {
+    console.error('Error fetching RAY data', err);
+  }
+}
+
 export function initTradingView() {
   if (!window.TradingView) return;
   new TradingView.widget({
@@ -136,6 +189,7 @@ export function initTradingView() {
 function initDashboard() {
   fetchBtcAndFng();
   fetchGoogleNews();
+  fetchRayData();
   initTradingView();
   setInterval(fetchGoogleNews, 300000);
 }
