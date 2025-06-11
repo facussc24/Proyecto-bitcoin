@@ -2,6 +2,12 @@ import { fetchSnapshot, fetchEthBtc, fetchVolumes, fetchGauge, fetchNews } from 
 import { renderEthBtc, renderVolumes } from './modules/charts.js';
 import { initLoader, renderSnapshot, renderNews, showError, renderFngGauge, setUpdated } from './modules/ui.js';
 
+const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
+function isEqual(a, b) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
 function cacheSet(key, data) {
   try {
     localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() }));
@@ -26,7 +32,12 @@ function start() {
   Promise.allSettled([
     fetchSnapshot()
       .then(data => {
-        renderSnapshot(data);
+        const cached = cacheGet('snapshot');
+        if (!cached || !isEqual(cached.data, data)) {
+          renderSnapshot(data);
+        } else {
+          setUpdated('prices-updated');
+        }
         cacheSet('snapshot', data);
       })
       .catch(() => {
@@ -42,11 +53,16 @@ function start() {
 
     fetchEthBtc()
       .then(d => {
-        renderEthBtc(
-          document.getElementById('ethbtcChart'),
-          d.labels,
-          d.ratios
-        );
+        const cached = cacheGet('ethbtc');
+        if (!cached || !isEqual(cached.data, d)) {
+          renderEthBtc(
+            document.getElementById('ethbtcChart'),
+            d.labels,
+            d.ratios
+          );
+        } else {
+          setUpdated('ethbtc-updated');
+        }
         cacheSet('ethbtc', d);
       })
       .catch(() => {
@@ -72,8 +88,14 @@ function start() {
           { label: 'CETUS', data: d.cetusVol, borderColor: '#20c997', borderDash: [5, 2], tension: 0.2, fill: false },
           { label: 'ORCA', data: d.orcaVol, borderColor: '#ffc107', borderDash: [2, 3], tension: 0.2, fill: false }
         ];
-        renderVolumes(document.getElementById('volumeChart'), d.labels, sets);
-        cacheSet('volumes', { labels: d.labels, sets });
+        const payload = { labels: d.labels, sets };
+        const cached = cacheGet('volumes');
+        if (!cached || !isEqual(cached.data, payload)) {
+          renderVolumes(document.getElementById('volumeChart'), d.labels, sets);
+        } else {
+          setUpdated('volume-updated');
+        }
+        cacheSet('volumes', payload);
       })
       .catch(() => {
         const cached = cacheGet('volumes');
@@ -92,7 +114,12 @@ function start() {
 
     fetchGauge()
       .then(data => {
-        renderFngGauge(data);
+        const cached = cacheGet('fng');
+        if (!cached || !isEqual(cached.data, data)) {
+          renderFngGauge(data);
+        } else {
+          setUpdated('fng-updated');
+        }
         cacheSet('fng', data);
       })
       .catch(() => {
@@ -108,7 +135,12 @@ function start() {
 
     fetchNews()
       .then(data => {
-        renderNews(data);
+        const cached = cacheGet('news');
+        if (!cached || !isEqual(cached.data, data)) {
+          renderNews(data);
+        } else {
+          setUpdated('news-updated');
+        }
         cacheSet('news', data);
       })
       .catch(() => {
@@ -124,4 +156,7 @@ function start() {
   ]);
 }
 
-document.addEventListener('DOMContentLoaded', start);
+document.addEventListener('DOMContentLoaded', () => {
+  start();
+  setInterval(start, REFRESH_INTERVAL);
+});

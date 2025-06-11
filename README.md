@@ -25,7 +25,7 @@ JavaScript code is organised in ES modules under `assets/js/`:
    # then visit http://localhost:8000/index.html
    ```
 
-The dashboard fetches live data from the internet so an active connection is required.
+The dashboard fetches live data from the internet so an active connection is required. Data automatically refreshes every 5 minutes.
 
 ## Tests
 
