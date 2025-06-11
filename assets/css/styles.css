@@ -15,12 +15,12 @@ body {
   color: var(--color-down);
 }
 
-#loading-screen {
+#loader-screen {
   z-index: 1050;
   background: #000;
 }
 
-#loading-screen.fade-out {
+#loader-screen.fade-out {
   opacity: 0;
   transition: opacity 0.3s;
 }

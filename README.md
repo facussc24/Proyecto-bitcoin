@@ -29,7 +29,7 @@ The dashboard fetches live data from the internet so an active connection is req
 
 ## Tests
 
-Run the automated tests with:
+Run the automated tests with (ensure you've installed dependencies via `npm install` first):
 
 ```bash
 npm test
