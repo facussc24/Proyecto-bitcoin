@@ -43,8 +43,9 @@ export function renderVolumes(ctx, labels, datasets, onComplete) {
   });
 }
 
-export function renderGauge(ctx, value, onComplete) {
-  return new Chart(ctx, {
+export function renderGauge(ctx, data, onComplete) {
+  const { value, classification } = typeof data === 'object' ? data : { value: data, classification: '' };
+  const chart = new Chart(ctx, {
     type: 'gauge',
     data: {
       datasets: [
@@ -58,13 +59,16 @@ export function renderGauge(ctx, value, onComplete) {
     },
     options: {
       responsive: true,
-      rotation: 180,
+      rotation: -90,
       circumference: 180,
       needle: { radiusPercentage: 2, widthPercentage: 3, lengthPercentage: 80 },
-      valueLabel: { display: false },
+      valueLabel: { display: true },
       trackColor: '#343a40',
       plugins: { legend: { display: false } },
       animation: { onComplete },
     },
   });
+  const label = document.getElementById('fng-label');
+  if (label) label.textContent = classification ? `${classification} (${value})` : value;
+  return chart;
 }

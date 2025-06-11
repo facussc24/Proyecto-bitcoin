@@ -30,7 +30,7 @@ function start() {
       .finally(tick),
 
     fetchGauge()
-      .then(v => renderGauge(document.getElementById('fngGauge'), v))
+      .then(data => renderGauge(document.getElementById('fngGauge'), data))
       .catch(() => showError('fng-error', 'Datos no disponibles'))
       .finally(tick),
 
