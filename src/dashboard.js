@@ -192,6 +192,116 @@ export async function fetchRayData() {
   }
 }
 
+export async function fetchDefiComparison() {
+  const tableBody = document.querySelector('#defi-table tbody');
+  const errorEl = document.getElementById('defi-error');
+  if (!tableBody) return;
+
+  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    .toISOString();
+
+  const protocols = [
+    { id: 'raydium', cg: 'raydium', repo: 'raydium-io/raydium-ui', type: 'dex' },
+    { id: 'orca', cg: 'orca', repo: 'orca-so/whirlpools', type: 'dex' },
+    { id: 'jupiter', cg: 'jupiter', repo: 'jup-ag/jupiter-react-native', type: 'aggregator' },
+    { id: 'pancakeswap', cg: 'pancakeswap-token', repo: 'pancakeswap/pancake-frontend', type: 'dex' },
+    { id: 'cetus', cg: 'cetus-protocol', repo: 'cetus-labs/cetus-amm', type: 'dex' }
+  ];
+
+  try {
+    const data = await Promise.all(
+      protocols.map(async p => {
+        const volumeUrl =
+          p.type === 'aggregator'
+            ? `https://api.llama.fi/summary/aggregators/${p.id}`
+            : `https://api.llama.fi/summary/dexs/${p.id}`;
+        const volume24h = await fetch(volumeUrl)
+          .then(r => r.json())
+          .then(d => d.total24h)
+          .catch(() => null);
+
+        const tvl = await fetch(`https://api.llama.fi/protocol/${p.id}`)
+          .then(r => r.json())
+          .then(d => d.tvl[d.tvl.length - 1]?.totalLiquidityUSD)
+          .catch(() => null);
+
+        const fees24h = await fetch(`https://api.llama.fi/summary/fees/${p.id}`)
+          .then(r => r.json())
+          .then(d => d.total24h)
+          .catch(() => null);
+        const annualFees = fees24h != null ? fees24h * 365 : null;
+
+        const marketCap = await fetch(
+          `https://api.coingecko.com/api/v3/coins/${p.cg}`
+        )
+          .then(r => r.json())
+          .then(d => d.market_data?.market_cap?.usd)
+          .catch(() => null);
+
+        const commits = await fetch(
+          `https://api.github.com/repos/${p.repo}/commits?since=${since}`
+        )
+          .then(r => r.json())
+          .then(arr => (Array.isArray(arr) ? arr.length : null))
+          .catch(() => null);
+
+        return { name: p.id.toUpperCase(), volume24h, tvl, annualFees, marketCap, commits };
+      })
+    );
+
+    tableBody.innerHTML = '';
+    const maxes = {
+      volume24h: Math.max(...data.map(d => d.volume24h || 0)),
+      tvl: Math.max(...data.map(d => d.tvl || 0)),
+      annualFees: Math.max(...data.map(d => d.annualFees || 0)),
+      marketCap: Math.max(...data.map(d => d.marketCap || 0)),
+      commits: Math.max(...data.map(d => d.commits || 0))
+    };
+
+    const fmt = n =>
+      n != null ? `$${n.toLocaleString('en-US', { maximumFractionDigits: 0 })}` : 'N/A';
+
+    data.forEach(d => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${d.name}</td>
+        <td class="${d.volume24h === maxes.volume24h ? 'leader' : ''}" data-sort="${d.volume24h || 0}">${fmt(d.volume24h)}</td>
+        <td class="${d.tvl === maxes.tvl ? 'leader' : ''}" data-sort="${d.tvl || 0}">${fmt(d.tvl)}</td>
+        <td class="${d.annualFees === maxes.annualFees ? 'leader' : ''}" data-sort="${d.annualFees || 0}">${fmt(d.annualFees)}</td>
+        <td class="${d.marketCap === maxes.marketCap ? 'leader' : ''}" data-sort="${d.marketCap || 0}">${fmt(d.marketCap)}</td>
+        <td class="${d.commits === maxes.commits ? 'leader' : ''}" data-sort="${d.commits || 0}">${d.commits ?? 'N/A'}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+    errorEl.textContent = '';
+  } catch (err) {
+    console.error('Error fetching DeFi data', err);
+    errorEl.textContent = 'No se pudo cargar la tabla DeFi';
+  }
+}
+
+function makeSortable(table) {
+  const headers = table.querySelectorAll('th');
+  headers.forEach((th, idx) => {
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', () => sortTable(table, idx));
+  });
+}
+
+function sortTable(table, idx) {
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const asc = table.dataset.sortAsc === '1';
+  rows.sort((a, b) => {
+    const av = parseFloat(a.children[idx].dataset.sort || 0);
+    const bv = parseFloat(b.children[idx].dataset.sort || 0);
+    return asc ? av - bv : bv - av;
+  });
+  table.dataset.sortAsc = asc ? '0' : '1';
+  rows.forEach(r => tbody.appendChild(r));
+}
+
 export function initTradingView() {
   if (!window.TradingView) return;
   new TradingView.widget({
@@ -211,8 +321,12 @@ function initDashboard() {
   fetchBtcAndFng();
   fetchGoogleNews();
   fetchRayData();
+  fetchDefiComparison();
   initTradingView();
+  const defiTable = document.getElementById('defi-table');
+  if (defiTable) makeSortable(defiTable);
   setInterval(fetchGoogleNews, 300000);
+  setInterval(fetchDefiComparison, 300000);
 }
 
 // Initialize when DOM is ready

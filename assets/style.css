@@ -17,3 +17,9 @@ footer {
 .news-item a { font-weight: 500; }
 .news-item small { font-size: 0.8rem; }
 .news-item p { font-size: 0.9rem; }
+.leader::after {
+  content: ' \25B2';
+  color: #198754;
+  font-size: 0.8rem;
+  margin-left: 2px;
+}
