@@ -41,6 +41,12 @@ npm test
 - **Alternative.me** – Fear & Greed index
 - **Google News RSS (via rss2json)** – latest cryptocurrency headlines
 
+## Error handling
+
+API requests are performed through a helper that retries failed fetches up to
+two times with a short delay. All exported functions in `api.js` use this helper
+so that temporary network issues are automatically mitigated.
+
 ## Available scripts
 
 - `npm test` – run Jest unit tests

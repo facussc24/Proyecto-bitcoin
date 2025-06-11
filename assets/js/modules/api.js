@@ -7,10 +7,20 @@ function fetchWithTimeout(url, options = {}) {
     .finally(() => clearTimeout(timer));
 }
 
-async function getJSON(url) {
-  const res = await fetchWithTimeout(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
+async function getJSON(url, retries = 2) {
+  let lastErr;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetchWithTimeout(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      lastErr = err;
+      if (attempt === retries) break;
+      await new Promise(r => setTimeout(r, 100));
+    }
+  }
+  throw lastErr;
 }
 
 /** CoinGecko: precios y cambios 24h */

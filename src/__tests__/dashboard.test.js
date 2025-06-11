@@ -1,5 +1,6 @@
 import {jest} from "@jest/globals";
 import {fetchGoogleNews, fetchBtcAndFng, fetchRayData, initTradingView} from '../dashboard.js';
+import {fetchSnapshot} from '../../assets/js/modules/api.js';
 
 describe('dashboard functions', () => {
   beforeEach(() => {
@@ -48,5 +49,15 @@ HTMLCanvasElement.prototype.getContext = jest.fn();
     document.body.innerHTML = '<div id="ethbtc-chart"></div>';
     initTradingView();
     expect(global.TradingView.widget).toHaveBeenCalledWith(expect.objectContaining({ symbol: 'BINANCE:ETHBTC' }));
+  });
+
+  test('fetchSnapshot retries on failure', async () => {
+    const data = { ok: true };
+    fetch
+      .mockRejectedValueOnce(new Error('net'))
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(data) });
+    const result = await fetchSnapshot();
+    expect(result).toEqual(data);
+    expect(fetch).toHaveBeenCalledTimes(2);
   });
 });
