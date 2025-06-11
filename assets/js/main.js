@@ -20,10 +20,11 @@ function cacheGet(key) {
   }
 }
 
-function start() {
-  const tick = initLoader(5);
+const REFRESH_INTERVAL = 60000;
+let refreshTimer;
 
-  Promise.allSettled([
+export function fetchAll(tick) {
+  return Promise.allSettled([
     fetchSnapshot()
       .then(data => {
         renderSnapshot(data);
@@ -122,6 +123,12 @@ function start() {
       })
       .finally(tick)
   ]);
+}
+
+export function start() {
+  const tick = initLoader(5);
+  fetchAll(tick);
+  refreshTimer = setInterval(fetchAll, REFRESH_INTERVAL);
 }
 
 document.addEventListener('DOMContentLoaded', start);
