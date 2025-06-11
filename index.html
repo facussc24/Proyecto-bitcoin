@@ -4,39 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BTC Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/cerulean/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/cerulean/bootstrap.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
   <style>
-    .news-container { max-height: 300px; overflow-y: scroll; }
+    .news-container { max-height: 300px; overflow-y: auto; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header class="text-center my-4">
-      <h1>El grupo de los próximos clase media</h1>
+  <div class="container py-4">
+    <header class="mb-4 text-center">
+      <h1 class="h3">El grupo de los próximos clase media</h1>
       <p class="text-muted">Invertir es tu responsabilidad</p>
     </header>
 
-    <div class="row my-4">
-      <div class="col">
-        <div class="card p-3">
+    <div class="row mb-4">
+      <div class="col-12">
+        <div id="btc-fng-card" class="card p-3">
           <h2 class="h4">BTC Price vs Fear &amp; Greed Index</h2>
-          <canvas id="btcFngChart" height="300" style="max-height:300px; width:100%;"></canvas>
+          <canvas id="btcFngChart" height="300"></canvas>
         </div>
       </div>
     </div>
 
-    <div class="row my-4">
-      <div class="col">
+    <div class="row mb-4">
+      <div class="col-12">
         <div class="card p-3">
           <h2 class="h4">ETH/BTC</h2>
-          <canvas id="btcEthChart" height="300"></canvas>
+          <div id="ethbtc-chart" style="height:300px"></div>
         </div>
       </div>
     </div>
 
-    <div class="row my-4">
-      <div class="col">
+    <div class="row mb-4">
+      <div class="col-12">
         <div class="card p-3">
           <h2 class="h4">Noticias sobre RAY</h2>
           <div class="news-container">
@@ -47,140 +47,7 @@
     </div>
   </div>
 
-<script>
-async function fetchBtcAndFng() {
-  try {
-    const [fngRes, btcRes] = await Promise.all([
-      fetch('https://api.alternative.me/fng/?limit=30'),
-      fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily')
-    ]);
-    const fngJson = await fngRes.json();
-    const btcJson = await btcRes.json();
-    const fngData = fngJson.data.reverse();
-    const btcPrices = btcJson.prices;
-
-    const labels = fngData.map((e,i) => {
-      const d = new Date(e.timestamp * 1000);
-      return d.toISOString().split('T')[0];
-    });
-    const fngValues = fngData.map(e => Number(e.value));
-    const btcValues = btcPrices.map(p => p[1]);
-    const bgColors = fngValues.map(v => v > 50 ? 'rgba(0,200,0,0.6)' : 'rgba(200,0,0,0.6)');
-
-    const ctx = document.getElementById('btcFngChart').getContext('2d');
-    new Chart(ctx, {
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            type: 'line',
-            label: 'BTC Precio (USD)',
-            data: btcValues,
-            borderColor: '#ff9900',
-            yAxisID: 'y1',
-            tension: 0.1,
-            fill: false
-          },
-          {
-            type: 'bar',
-            label: 'Fear & Greed',
-            data: fngValues,
-            backgroundColor: bgColors,
-            yAxisID: 'y2'
-          }
-        ]
-      },
-      options: {
-      maintainAspectRatio: true,
-        scales: {
-          y1: { type: 'linear', position: 'left', title: { display: true, text: 'Precio USD' } },
-          y2: { type: 'linear', position: 'right', min: 0, max: 100, title: { display: true, text: 'F&G' }, grid: { drawOnChartArea: false } }
-        }
-      }
-    });
-  } catch (err) {
-    console.error('Error fetching BTC & FNG data', err);
-    const canvas = document.getElementById('btcFngChart');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = '16px sans-serif';
-    ctx.fillText('Datos no disponibles', 10, 50);
-    if (window.alert) alert('No se pudieron obtener datos de BTC/F&G');
-  }
-}
-
-async function fetchBtcVsEth() {
-  try {
-    const [btcRes, ethRes] = await Promise.all([
-      fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily'),
-      fetch('https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=30&interval=daily')
-    ]);
-    const btcJson = await btcRes.json();
-    const ethJson = await ethRes.json();
-    const labels = btcJson.prices.map(p => new Date(p[0]).toISOString().split('T')[0]);
-    const btcPrices = btcJson.prices.map(p => p[1]);
-    const ethPrices = ethJson.prices.map(p => p[1]);
-
-    const ctx = document.getElementById('btcEthChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [
-          { label: 'BTC', data: btcPrices, borderColor: '#f2a900', fill: false, tension: 0.1 },
-          { label: 'ETH', data: ethPrices, borderColor: '#627eea', fill: false, tension: 0.1 }
-        ]
-      },
-      options: {
-        scales: {
-          y: { beginAtZero: false }
-        }
-      }
-    });
-  } catch (err) {
-    console.error('Error fetching BTC vs ETH data', err);
-    const canvas = document.getElementById('btcEthChart');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = '16px sans-serif';
-    ctx.fillText('Datos no disponibles', 10, 50);
-    if (window.alert) alert('No se pudieron obtener datos de BTC vs ETH');
-  }
-}
-
-async function fetchRayNews() {
-  try {
-    const res = await fetch('https://api.allorigins.win/raw?url=https://www.reddit.com/r/raydium/.rss');
-    if (!res.ok) throw new Error('Request failed');
-    const xmlText = await res.text();
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(xmlText, 'application/xml');
-    const entries = Array.from(xml.querySelectorAll('entry')).slice(0, 10);
-    const list = document.getElementById('news-list');
-    list.innerHTML = '';
-    entries.forEach(item => {
-      const title = item.querySelector('title')?.textContent || 'Sin título';
-      const link = item.querySelector('link')?.getAttribute('href');
-      const li = document.createElement('li');
-      li.className = 'list-group-item';
-      const a = document.createElement('a');
-      a.href = link;
-      a.textContent = title;
-      a.target = '_blank';
-      li.appendChild(a);
-      list.appendChild(li);
-    });
-  } catch (err) {
-    const list = document.getElementById('news-list');
-    list.innerHTML = '<li class="list-group-item text-danger">No se pudo cargar el feed</li>';
-  }
-}
-
-
-fetchBtcAndFng();
-fetchBtcVsEth();
-fetchRayNews();
-setInterval(fetchRayNews, 300000);
-</script>
+  <script src="https://s3.tradingview.com/tv.js"></script>
+  <script type="module" src="src/dashboard.js"></script>
 </body>
 </html>
