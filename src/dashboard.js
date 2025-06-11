@@ -335,7 +335,30 @@ export function initTradingView() {
   });
 }
 
+export async function updateTicker() {
+  try {
+    const res = await fetch(
+      'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,raydium&vs_currencies=usd',
+      { cache: 'no-store' }
+    );
+    if (!res.ok) throw new Error('Failed to fetch prices');
+    const data = await res.json();
+    const btcEl = document.getElementById('btc-price');
+    const ethEl = document.getElementById('eth-price');
+    const rayEl = document.getElementById('ray-price');
+    if (btcEl) btcEl.textContent = `BTC: $${data.bitcoin.usd}`;
+    if (ethEl) ethEl.textContent = `ETH: $${data.ethereum.usd}`;
+    if (rayEl) rayEl.textContent = `RAY: $${data.raydium.usd}`;
+  } catch (err) {
+    console.error('Error updating ticker', err);
+  }
+}
+
 function initDashboard() {
+  if (document.getElementById('price-ticker')) {
+    updateTicker();
+    setInterval(updateTicker, 1000);
+  }
   fetchBtcAndFng();
   fetchRayData();
   fetchDefiComparison();
