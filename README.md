@@ -35,6 +35,9 @@ npm test
 - **Bootswatch** (Cerulean theme) [`bootswatch@5.3.2`](https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/cerulean/bootstrap.min.css)
 - **Bootstrap JS** [`bootstrap@5.3.2`](https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js)
 - **Chart.js** [`chart.js@3.9.1`](https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js)
+- **chartjs-gauge** [`chartjs-gauge@0.3.0`](https://cdn.jsdelivr.net/npm/chartjs-gauge@0.3.0/dist/chartjs-gauge.min.js)
+
+The gauge showing the Fear & Greed index relies on this plugin and is loaded automatically from the CDN when you open `index.html`.
 
 ## Customizing API endpoints
 
@@ -42,7 +45,7 @@ The dashboard uses several public APIs. You can change them inside `src/dashboar
 
 - **Fear & Greed index**: `https://api.alternative.me/fng/?limit=30`
 - **Bitcoin prices**: `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily`
-- **News feed**: `https://api.rss2json.com/v1/api.json?rss_url=https://www.reddit.com/r/raydium/.rss`
+- **News feed**: `https://api.rss2json.com/v1/api.json?rss_url=https://news.google.com/rss/search?q=bitcoin`
 
 ## Adding images
 

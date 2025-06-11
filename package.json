@@ -11,5 +11,8 @@
   },
   "jest": {
     "testEnvironment": "jsdom"
+  },
+  "dependencies": {
+    "chartjs-gauge": "^0.3.0"
   }
 }

@@ -1,7 +1,8 @@
 export async function fetchBtcAndFng() {
   const card = document.getElementById('btc-fng-card');
-  const canvas = document.getElementById('btcFngChart');
-  if (!canvas || !card) return;
+  const priceCanvas = document.getElementById('btcFngChart');
+  const gaugeCanvas = document.getElementById('fngGauge');
+  if (!priceCanvas || !card || !gaugeCanvas) return;
 
   try {
     const [fngRes, btcRes] = await Promise.all([
@@ -16,44 +17,48 @@ export async function fetchBtcAndFng() {
     const labels = fngData.map(e => new Date(e.timestamp * 1000).toISOString().split('T')[0]);
     const fngValues = fngData.map(e => Number(e.value));
     const btcValues = btcPrices.map(p => p[1]);
-    const bgColors = fngValues.map(v => v > 50 ? 'rgba(0,150,0,0.6)' : 'rgba(200,0,0,0.6)');
+    const latestFng = fngValues[fngValues.length - 1];
 
     card.querySelector('.error-message')?.remove();
-    canvas.style.display = 'block';
+    priceCanvas.style.display = 'block';
 
-    new Chart(canvas.getContext('2d'), {
+    new Chart(priceCanvas.getContext('2d'), {
+      type: 'line',
       data: {
         labels,
-        datasets: [
-          {
-            type: 'line',
-            label: 'BTC Precio (USD)',
-            data: btcValues,
-            borderColor: '#ff9900',
-            yAxisID: 'y1',
-            tension: 0.1,
-            fill: false
-          },
-          {
-            type: 'bar',
-            label: 'Fear & Greed',
-            data: fngValues,
-            backgroundColor: bgColors,
-            yAxisID: 'y2'
-          }
-        ]
+        datasets: [{
+          label: 'BTC Precio (USD)',
+          data: btcValues,
+          borderColor: '#ff9900',
+          tension: 0.1,
+          fill: false
+        }]
       },
       options: {
         maintainAspectRatio: true,
-        scales: {
-          y1: { type: 'linear', position: 'left', title: { display: true, text: 'Precio USD' } },
-          y2: { type: 'linear', position: 'right', min: 0, max: 100, title: { display: true, text: 'F&G' }, grid: { drawOnChartArea: false } }
-        }
+        scales: { y: { type: 'linear', position: 'left', title: { display: true, text: 'Precio USD' } } }
+      }
+    });
+
+    new Chart(gaugeCanvas.getContext('2d'), {
+      type: 'gauge',
+      data: {
+        datasets: [{
+          value: latestFng,
+          data: [25, 25, 25, 25],
+          minValue: 0,
+          backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#28a745']
+        }]
+      },
+      options: {
+        responsive: true,
+        needle: { radiusPercentage: 2, widthPercentage: 3.2, lengthPercentage: 80 },
+        valueLabel: { display: true }
       }
     });
   } catch (err) {
     console.error('Error fetching BTC & FNG data', err);
-    canvas.style.display = 'none';
+    priceCanvas.style.display = 'none';
     card.querySelector('.error-message')?.remove();
     const msg = document.createElement('div');
     msg.className = 'text-danger error-message';
@@ -62,11 +67,11 @@ export async function fetchBtcAndFng() {
   }
 }
 
-export async function fetchRayNews() {
-  const list = document.getElementById('news-list');
+export async function fetchGoogleNews() {
+  const list = document.getElementById('google-news-list');
   if (!list) return;
   try {
-    const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://www.reddit.com/r/raydium/.rss', {cache: 'no-store'});
+    const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://news.google.com/rss/search?q=bitcoin', {cache: 'no-store'});
     const data = await res.json();
     list.innerHTML = '';
     data.items.slice(0, 10).forEach(item => {
@@ -103,13 +108,13 @@ export function initTradingView() {
 // Initialize when DOM is ready
 if (document.readyState !== 'loading') {
   fetchBtcAndFng();
-  fetchRayNews();
+  fetchGoogleNews();
   initTradingView();
 } else {
   document.addEventListener('DOMContentLoaded', () => {
     fetchBtcAndFng();
-    fetchRayNews();
+    fetchGoogleNews();
     initTradingView();
   });
 }
-setInterval(fetchRayNews, 300000);
+setInterval(fetchGoogleNews, 300000);
