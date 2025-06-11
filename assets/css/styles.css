@@ -1,13 +1,28 @@
+:root {
+  --color-up: #198754;
+  --color-down: #dc3545;
+}
+
 body {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 .price-change-up {
-  color: #198754;
+  color: var(--color-up);
 }
 
 .price-change-down {
-  color: #dc3545;
+  color: var(--color-down);
+}
+
+#loading-screen {
+  z-index: 1050;
+  background: #000;
+}
+
+#loading-screen.fade-out {
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
 .spinner-border {
