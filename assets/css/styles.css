@@ -1,0 +1,10 @@
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+#ethbtc-price {
+  font-weight: bold;
+}
+.spinner-border {
+  width: 2rem;
+  height: 2rem;
+}
