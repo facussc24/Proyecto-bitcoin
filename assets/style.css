@@ -13,3 +13,4 @@ footer {
   font-size: 0.9rem;
 }
 .news-container { max-height: 300px; overflow-y: auto; }
+#fngGauge { max-width: 300px; margin: 0 auto; }
