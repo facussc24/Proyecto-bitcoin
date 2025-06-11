@@ -48,6 +48,8 @@
   </div>
 
 <script>
+const NEWS_FEED_URL = 'https://api.allorigins.win/raw?url=https://www.reddit.com/r/raydium/.rss';
+const NEWS_INTERVAL = 10000; // milliseconds
 async function fetchBtcAndFng() {
   const [fngRes, btcRes] = await Promise.all([
     fetch('https://api.alternative.me/fng/?limit=30'),
@@ -128,28 +130,48 @@ async function fetchBtcVsEth() {
   });
 }
 
-async function fetchRayNews() {
+async function fetchRayNews(url = NEWS_FEED_URL) {
   try {
-    const res = await fetch('https://api.allorigins.win/raw?url=https://www.reddit.com/r/raydium/.rss');
+    const res = await fetch(url);
     if (!res.ok) throw new Error('Request failed');
-    const xmlText = await res.text();
-    const parser = new DOMParser();
-    const xml = parser.parseFromString(xmlText, 'application/xml');
-    const entries = Array.from(xml.querySelectorAll('entry')).slice(0, 10);
+    const contentType = res.headers.get('content-type') || '';
     const list = document.getElementById('news-list');
     list.innerHTML = '';
-    entries.forEach(item => {
-      const title = item.querySelector('title')?.textContent || 'Sin título';
-      const link = item.querySelector('link')?.getAttribute('href');
-      const li = document.createElement('li');
-      li.className = 'list-group-item';
-      const a = document.createElement('a');
-      a.href = link;
-      a.textContent = title;
-      a.target = '_blank';
-      li.appendChild(a);
-      list.appendChild(li);
-    });
+    if (contentType.includes('application/json')) {
+      const data = await res.json();
+      const items = (Array.isArray(data) ? data : data.items || data.statuses || data.articles || data.data || []);
+      items.slice(0, 10).forEach(item => {
+        const title = item.title || item.text || 'Sin título';
+        const link = item.link || item.url;
+        if (!link) return;
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        const a = document.createElement('a');
+        a.href = link;
+        a.textContent = title;
+        a.target = '_blank';
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+    } else {
+      const xmlText = await res.text();
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(xmlText, 'application/xml');
+      const entries = Array.from(xml.querySelectorAll('item, entry')).slice(0, 10);
+      entries.forEach(item => {
+        const title = item.querySelector('title')?.textContent || 'Sin título';
+        const linkNode = item.querySelector('link');
+        const link = linkNode?.getAttribute('href') || linkNode?.textContent;
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+        const a = document.createElement('a');
+        a.href = link;
+        a.textContent = title;
+        a.target = '_blank';
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+    }
   } catch (err) {
     const list = document.getElementById('news-list');
     list.innerHTML = '<li class="list-group-item text-danger">No se pudo cargar el feed</li>';
@@ -159,8 +181,8 @@ async function fetchRayNews() {
 
 fetchBtcAndFng();
 fetchBtcVsEth();
-fetchRayNews();
-setInterval(fetchRayNews, 300000);
+fetchRayNews(NEWS_FEED_URL);
+setInterval(() => fetchRayNews(NEWS_FEED_URL), NEWS_INTERVAL);
 </script>
 </body>
 </html>
