@@ -122,6 +122,7 @@ export async function fetchRayData() {
   const priceCanvas = document.getElementById('rayPriceChart');
   const volumeCanvas = document.getElementById('rayVolumeChart');
   if (!priceCanvas || !volumeCanvas) return;
+  const card = priceCanvas.parentElement;
 
   try {
     const [rayRes, serumRes] = await Promise.all([
@@ -166,8 +167,18 @@ export async function fetchRayData() {
       },
       options: { maintainAspectRatio: true }
     });
+    priceCanvas.style.display = 'block';
+    volumeCanvas.style.display = 'block';
+    card.querySelector('.error-message')?.remove();
   } catch (err) {
     console.error('Error fetching RAY data', err);
+    priceCanvas.style.display = 'none';
+    volumeCanvas.style.display = 'none';
+    card.querySelector('.error-message')?.remove();
+    const msg = document.createElement('div');
+    msg.className = 'text-danger error-message';
+    msg.textContent = 'Datos de RAY no disponibles';
+    card.appendChild(msg);
   }
 }
 

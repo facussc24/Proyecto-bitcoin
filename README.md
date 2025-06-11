@@ -10,9 +10,13 @@ The layout now includes a responsive navbar, a hero banner and a footer. Custom 
    ```bash
    npm install
    ```
-2. Decode the asset files:
+2. Decode the Base64 images found under `assets/img/`:
    ```bash
    npm run extract-assets
+   ```
+   # or use the shell helper:
+   ```bash
+   scripts/extract_assets.sh
    ```
 3. Serve the page (for example with Python) and open it in your browser:
    ```bash
@@ -58,13 +62,14 @@ The default logo and hero background are provided only as Base64 text files so t
 
 ### Extracting provided images
 
-Some platforms do not allow binary files to be checked in directly. For that case,
-the repository also includes the images encoded as Base64 text (`logo.txt` and
-`hero-bg.txt`). Run the helper script to decode them:
+Some platforms do not allow binary files to be checked in directly. For that case
+the repository includes the images encoded as Base64 text files under
+`assets/img/` (e.g. `hero-bg.txt`). Decode them with the provided script or npm command:
 
 ```bash
+npm run extract-assets
+# or
 scripts/extract_assets.sh
 ```
-
-After running the script you will have `logo.png` and `hero-bg.jpg` in
+After running the script you will have the corresponding image files in
 `assets/img/` ready to use.

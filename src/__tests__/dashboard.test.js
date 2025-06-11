@@ -36,9 +36,18 @@ HTMLCanvasElement.prototype.getContext = jest.fn();
       .mockResolvedValueOnce({ json: () => Promise.resolve(ray) })
       .mockResolvedValueOnce({ json: () => Promise.resolve(serum) });
     global.Chart = jest.fn();
-    document.body.innerHTML = '<canvas id="rayPriceChart"></canvas><canvas id="rayVolumeChart"></canvas>';
+    document.body.innerHTML = '<div><canvas id="rayPriceChart"></canvas><canvas id="rayVolumeChart"></canvas></div>';
     await fetchRayData();
     expect(global.Chart).toHaveBeenCalledTimes(2);
+  });
+
+  test('fetchRayData shows message on failure', async () => {
+    fetch.mockRejectedValueOnce(new Error('fail'));
+    document.body.innerHTML = '<div><canvas id="rayPriceChart"></canvas><canvas id="rayVolumeChart"></canvas></div>';
+    await fetchRayData();
+    const msg = document.querySelector('.error-message');
+    expect(msg).not.toBeNull();
+    expect(msg.textContent).toMatch(/RAY/);
   });
 
   test('initTradingView uses TradingView.widget', () => {
