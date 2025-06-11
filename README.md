@@ -1,6 +1,6 @@
 # Crypto Dashboard
 
-This project provides a lightweight dashboard (`index.html`) that displays real‑time cryptocurrency information. It uses **Bootswatch Flatly** for styling and **Chart.js** to render the graphs.
+This project provides a lightweight dashboard (`index.html`) that displays real‑time cryptocurrency information. It uses **Bootswatch Flatly** for styling and **Chart.js** to render the graphs.  Chart.js and the gauge plugin are bundled locally to avoid external network dependencies.
 
 JavaScript code is organised in ES modules under `assets/js/`:
 

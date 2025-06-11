@@ -1,5 +1,5 @@
-import Chart from 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.esm.js';
-import { GaugeController } from 'https://cdn.jsdelivr.net/npm/chartjs-gauge-v3@3.0.0/dist/index.esm.js';
+import Chart from '../vendor/chart.esm.js';
+import { GaugeController } from '../vendor/chartjs-gauge.esm.js';
 
 Chart.register(GaugeController);
 
