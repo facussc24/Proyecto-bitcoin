@@ -52,7 +52,7 @@ export async function fetchBtcAndFng() {
       },
       options: {
         responsive: true,
-        needle: { radiusPercentage: 2, widthPercentage: 3.2, lengthPercentage: 80 },
+        needle: { radius: '2%', width: '3.2%', length: '80%' },
         valueLabel: { display: true }
       }
     });
