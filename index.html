@@ -8,6 +8,9 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
   <style>
     .news-container { max-height: 300px; overflow-y: scroll; }
+    .gauge-container { position: relative; width: 200px; height: 100px; }
+    #gauge-arrow { position: absolute; bottom: 5px; left: 50%; width: 2px; height: 60%; background: #000; transform-origin: bottom center; }
+    #gauge-value { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -26,6 +29,18 @@
       </div>
     </div>
 
+    <div class="row my-4">
+      <div class="col d-flex justify-content-center">
+        <div class="card p-3 text-center">
+          <h2 class="h4">Fear &amp; Greed Gauge</h2>
+          <div class="gauge-container mx-auto">
+            <canvas id="fngGaugeCanvas" width="200" height="100"></canvas>
+            <div id="gauge-arrow"></div>
+            <div id="gauge-value"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row my-4">
       <div class="col">
         <div class="card p-3">
@@ -128,6 +143,41 @@ async function fetchBtcVsEth() {
   });
 }
 
+function createFngGauge() {
+  const ctx = document.getElementById('fngGaugeCanvas').getContext('2d');
+  const colors = Array.from({length: 100}, (_, i) => {
+    if (i < 25) return '#d9534f';
+    if (i < 50) return '#f0ad4e';
+    if (i < 75) return '#cddc39';
+    return '#4caf50';
+  });
+  window.fngGaugeChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels: Array(100).fill(''), datasets: [{ data: Array(100).fill(1), backgroundColor: colors, borderWidth: 0 }] },
+    options: {
+      rotation: -Math.PI,
+      circumference: Math.PI,
+      cutout: '70%',
+      plugins: { legend: { display: false }, tooltip: { enabled: false } }
+    }
+  });
+}
+
+function updateGauge(value) {
+  document.getElementById('gauge-arrow').style.transform = `rotate(${value * 1.8 - 90}deg)`;
+  document.getElementById('gauge-value').textContent = value;
+}
+
+async function fetchFngGauge() {
+  try {
+    const res = await fetch('https://api.alternative.me/fng/');
+    const json = await res.json();
+    const value = Number(json.data[0].value);
+    updateGauge(value);
+  } catch (err) {
+    console.error('Gauge fetch failed', err);
+  }
+}
 async function fetchRayNews() {
   try {
     const res = await fetch('https://api.allorigins.win/raw?url=https://www.reddit.com/r/raydium/.rss');
@@ -158,6 +208,9 @@ async function fetchRayNews() {
 
 
 fetchBtcAndFng();
+createFngGauge();
+fetchFngGauge();
+setInterval(fetchFngGauge, 21600000);
 fetchBtcVsEth();
 fetchRayNews();
 setInterval(fetchRayNews, 300000);
