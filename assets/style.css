@@ -1,0 +1,15 @@
+.hero {
+  background: url('img/hero-bg.jpg') center/cover no-repeat;
+  color: white;
+  padding: 4rem 0;
+  text-align: center;
+}
+.card + .card {
+  margin-top: 1rem;
+}
+footer {
+  padding: 2rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+}
+.news-container { max-height: 300px; overflow-y: auto; }
