@@ -66,7 +66,11 @@ export async function fetchVolumes() {
 export async function fetchGauge() {
   try {
     const data = await getJSON('https://api.alternative.me/fng/?limit=1&format=json');
-    return Number(data.data[0].value);
+    const latest = data.data[0];
+    return {
+      value: Number(latest.value),
+      classification: latest.value_classification
+    };
   } catch (err) {
     console.error('F&G', err);
     throw err;
