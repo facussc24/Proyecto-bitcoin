@@ -337,13 +337,11 @@ export function initTradingView() {
 
 function initDashboard() {
   fetchBtcAndFng();
-  fetchGoogleNews();
   fetchRayData();
   fetchDefiComparison();
   initTradingView();
   const defiTable = document.getElementById('defi-table');
   if (defiTable) makeSortable(defiTable);
-  setInterval(fetchGoogleNews, 300000);
   setInterval(fetchDefiComparison, 300000);
 }
 

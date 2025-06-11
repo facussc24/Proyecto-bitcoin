@@ -1,6 +1,6 @@
 # Bitcoin Dashboard
 
-This project contains a small dashboard (`index.html`) that displays Bitcoin price data, the Fear & Greed index, an ETH/BTC chart, RAY indicators and a news feed. The page uses **Bootswatch** for styling and **Chart.js** for the BTC chart. JavaScript code lives in `src/dashboard.js`.
+This project contains a small dashboard (`index.html`) that displays Bitcoin price data, the Fear & Greed index, an ETH/BTC chart, RAY indicators and a link to our Telegram group. The page uses **Bootswatch** for styling and **Chart.js** for the BTC chart. JavaScript code lives in `src/dashboard.js`.
 The RAY section now compares its trading volume against PancakeSwap (CAKE) and Cetus.
 
 The layout now includes a responsive navbar, a hero banner and a footer. Custom styles and images live under the `assets/` folder.
@@ -49,10 +49,9 @@ The dashboard uses several public APIs. You can change them inside `src/dashboar
 - **Raydium data**: `https://api.coingecko.com/api/v3/coins/raydium/market_chart?vs_currency=usd&days=30&interval=daily`
 - **PancakeSwap data**: `https://api.coingecko.com/api/v3/coins/pancakeswap-token/market_chart?vs_currency=usd&days=30&interval=daily`
 - **Cetus data**: `https://api.coingecko.com/api/v3/coins/cetus-protocol/market_chart?vs_currency=usd&days=30&interval=daily`
-- **News feed**: `https://api.rss2json.com/v1/api.json?rss_url=https://news.google.com/rss/search?q=bitcoin`
+- **Telegram group**: <https://t.me/NewsAgregatorBtCryptoWhale>
 
-The news section pulls headlines from Google News using the rss2json service.
-It refreshes automatically every five minutes to show the latest articles.
+The news section has been replaced with a simple link to our Telegram group where updates are posted regularly.
 
 ## Adding images
 
