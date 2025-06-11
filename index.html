@@ -22,7 +22,7 @@
       <div class="col">
         <div class="card p-3">
           <h2 class="h4">BTC Price vs Fear &amp; Greed Index</h2>
-          <canvas id="btcFngChart" height="100"></canvas>
+          <canvas id="btcFngChart" height="300"></canvas>
         </div>
       </div>
     </div>
@@ -91,6 +91,7 @@ async function fetchBtcAndFng() {
       ]
     },
     options: {
+    maintainAspectRatio: false,
       scales: {
         y1: { type: 'linear', position: 'left', title: { display: true, text: 'Precio USD' } },
         y2: { type: 'linear', position: 'right', min: 0, max: 100, title: { display: true, text: 'F&G' }, grid: { drawOnChartArea: false } }
@@ -130,7 +131,7 @@ async function fetchBtcVsEth() {
 
 async function fetchRayNews() {
   try {
-    const res = await fetch('https://www.reddit.com/r/raydium/.rss');
+    const res = await fetch('https://api.allorigins.win/raw?url=https://www.reddit.com/r/raydium/.rss');
     if (!res.ok) throw new Error('Request failed');
     const xmlText = await res.text();
     const parser = new DOMParser();
@@ -164,6 +165,7 @@ new TradingView.widget({
   hide_top_toolbar: true,
   hide_legend: true,
   style: 1,
+  interval: "D",
   locale: 'en'
 });
 
