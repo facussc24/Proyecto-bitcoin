@@ -22,7 +22,7 @@
       <div class="col">
         <div class="card p-3">
           <h2 class="h4">BTC Price vs Fear &amp; Greed Index</h2>
-          <canvas id="btcFngChart" height="300"></canvas>
+          <canvas id="btcFngChart" height="300" style="max-height:300px; width:100%;"></canvas>
         </div>
       </div>
     </div>
@@ -91,7 +91,7 @@ async function fetchBtcAndFng() {
       ]
     },
     options: {
-    maintainAspectRatio: false,
+    maintainAspectRatio: true,
       scales: {
         y1: { type: 'linear', position: 'left', title: { display: true, text: 'Precio USD' } },
         y2: { type: 'linear', position: 'right', min: 0, max: 100, title: { display: true, text: 'F&G' }, grid: { drawOnChartArea: false } }
