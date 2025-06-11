@@ -23,6 +23,7 @@
         <ul class="navbar-nav ms-auto">
           <li class="nav-item"><a class="nav-link" href="#btc-section">BTC/F&G</a></li>
           <li class="nav-item"><a class="nav-link" href="#ethbtc-section">ETH/BTC</a></li>
+          <li class="nav-item"><a class="nav-link" href="#ray-section">RAY</a></li>
           <li class="nav-item"><a class="nav-link" href="#news-section">Noticias</a></li>
         </ul>
       </div>
@@ -45,16 +46,24 @@
       </div>
     </section>
 
-    <section id="ethbtc-section" class="mb-4">
-      <div class="card p-3">
-        <h2 class="h4">ETH/BTC</h2>
-        <div id="ethbtc-chart" style="height:300px"></div>
-      </div>
-    </section>
+  <section id="ethbtc-section" class="mb-4">
+    <div class="card p-3">
+      <h2 class="h4">ETH/BTC</h2>
+      <div id="ethbtc-chart" style="height:300px"></div>
+    </div>
+  </section>
 
-      <section id="google-news-section" class="mb-4">
-        <div class="card p-3">
-          <h2 class="h4">Noticias de Bitcoin</h2>
+  <section id="ray-section" class="mb-4">
+    <div class="card p-3">
+      <h2 class="h4">RAY</h2>
+      <canvas id="rayPriceChart" height="300"></canvas>
+      <canvas id="rayVolumeChart" height="300"></canvas>
+    </div>
+  </section>
+
+  <section id="google-news-section" class="mb-4">
+    <div class="card p-3">
+      <h2 class="h4">Noticias de Bitcoin</h2>
           <div class="news-container">
             <ul id="google-news-list" class="list-group"></ul>
           </div>

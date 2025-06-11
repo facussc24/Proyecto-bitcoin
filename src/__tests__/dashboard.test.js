@@ -1,5 +1,5 @@
 import {jest} from "@jest/globals";
-import {fetchGoogleNews, fetchBtcAndFng, initTradingView} from '../dashboard.js';
+import {fetchGoogleNews, fetchBtcAndFng, fetchRayData, initTradingView} from '../dashboard.js';
 
 describe('dashboard functions', () => {
   beforeEach(() => {
@@ -26,6 +26,18 @@ HTMLCanvasElement.prototype.getContext = jest.fn();
     global.Chart = jest.fn();
     document.body.innerHTML = '<div id="btc-fng-card"><canvas id="btcFngChart"></canvas><canvas id="fngGauge"></canvas></div>';
     await fetchBtcAndFng();
+    expect(global.Chart).toHaveBeenCalledTimes(2);
+  });
+
+  test('fetchRayData draws charts', async () => {
+    const ray = { prices: [[1, 1]], total_volumes: [[1, 100]] };
+    const serum = { prices: [[1, 0]], total_volumes: [[1, 50]] };
+    fetch
+      .mockResolvedValueOnce({ json: () => Promise.resolve(ray) })
+      .mockResolvedValueOnce({ json: () => Promise.resolve(serum) });
+    global.Chart = jest.fn();
+    document.body.innerHTML = '<canvas id="rayPriceChart"></canvas><canvas id="rayVolumeChart"></canvas>';
+    await fetchRayData();
     expect(global.Chart).toHaveBeenCalledTimes(2);
   });
 
