@@ -4,8 +4,8 @@
  * (c) 2022 chartjs-gauge-v3 Contributors
  * Released under the MIT License
  */
-import { Chart, DoughnutController, ArcElement } from 'chart.js';
-import { toRadians, toPercentage, toFont, addRoundedRectPath, toTRBLCorners, renderText } from 'chart.js/helpers';
+import { Chart, DoughnutController, ArcElement } from './chart.esm.js';
+import { toRadians, toPercentage, toFont, addRoundedRectPath, toTRBLCorners, renderText } from './helpers.esm.js';
 
 var version = "3.0.0";
 
