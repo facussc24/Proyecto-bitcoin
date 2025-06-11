@@ -13,6 +13,6 @@
     "testEnvironment": "jsdom"
   },
   "dependencies": {
-    "chartjs-gauge": "^0.3.0"
+    "chartjs-gauge-v3": "^3.0.0"
   }
 }
