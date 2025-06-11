@@ -47,6 +47,9 @@ The dashboard uses several public APIs. You can change them inside `src/dashboar
 - **Bitcoin prices**: `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily`
 - **News feed**: `https://api.rss2json.com/v1/api.json?rss_url=https://news.google.com/rss/search?q=bitcoin`
 
+The news section pulls headlines from Google News using the rss2json service.
+It refreshes automatically every five minutes to show the latest articles.
+
 ## Adding images
 
 Place your images in the `assets/img/` directory and reference them from HTML or CSS using a relative path, e.g. `assets/img/my-photo.jpg`.

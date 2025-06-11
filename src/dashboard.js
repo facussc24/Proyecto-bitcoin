@@ -105,16 +105,16 @@ export function initTradingView() {
   });
 }
 
-// Initialize when DOM is ready
-if (document.readyState !== 'loading') {
+function initDashboard() {
   fetchBtcAndFng();
   fetchGoogleNews();
   initTradingView();
-} else {
-  document.addEventListener('DOMContentLoaded', () => {
-    fetchBtcAndFng();
-    fetchGoogleNews();
-    initTradingView();
-  });
+  setInterval(fetchGoogleNews, 300000);
 }
-setInterval(fetchGoogleNews, 300000);
+
+// Initialize when DOM is ready
+if (document.readyState !== 'loading') {
+  initDashboard();
+} else {
+  document.addEventListener('DOMContentLoaded', initDashboard);
+}
