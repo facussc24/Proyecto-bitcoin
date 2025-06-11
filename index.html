@@ -10,11 +10,12 @@
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
-  <div id="loading-screen" class="position-fixed top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center text-white">
-    <p class="mb-3">Cargando...</p>
-    <div class="progress w-75" style="height:20px" aria-label="Progreso">
-      <div id="loading-progress" class="progress-bar" role="progressbar" style="width:0%">0%</div>
+  <div id="loader-screen" class="position-fixed top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center text-white" role="alert" aria-live="assertive">
+    <p class="mb-3">Cargando datos…</p>
+    <div class="progress w-75" style="height:20px">
+      <div id="progress-bar" class="progress-bar" style="width:0%"></div>
     </div>
+    <span id="progress-label" class="mt-2">0 %</span>
   </div>
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">

@@ -1,56 +1,60 @@
-let totalSteps = 1;
-let currentStep = 0;
+// Gestiona la pantalla de carga y utilidades de interfaz
+let totalTasks = 0;
+let completed = 0;
+let forceTimeout;
 
-function progressBar() {
-  return document.getElementById('loading-progress');
+function hideLoader() {
+  const screen = document.getElementById('loader-screen');
+  if (!screen) return;
+  screen.classList.add('fade-out');
+  setTimeout(() => screen.remove(), 300);
 }
 
-export function initLoading(steps) {
-  totalSteps = steps;
-  currentStep = 0;
-  const bar = progressBar();
-  if (bar) {
-    bar.style.width = '0%';
-    bar.textContent = '0%';
-  }
+/**
+ * Inicializa el loader global.
+ * @param {number} total Número total de tareas que deben completarse
+ * @returns {Function} Función tick() que avanza el progreso
+ */
+export function initLoader(total) {
+  totalTasks = total;
+  completed = 0;
+  const bar = document.getElementById('progress-bar');
+  const label = document.getElementById('progress-label');
+  if (bar) bar.style.width = '0%';
+  if (label) label.textContent = '0 %';
+  clearTimeout(forceTimeout);
+  forceTimeout = setTimeout(hideLoader, 15000);
+
+  return function tick() {
+    completed += 1;
+    const pct = Math.min(100, Math.round((completed / totalTasks) * 100));
+    if (bar) bar.style.width = `${pct}%`;
+    if (label) label.textContent = `${pct} %`;
+    if (completed >= totalTasks) hideLoader();
+  };
 }
 
-export function advanceLoading() {
-  currentStep += 1;
-  const percent = Math.min(100, Math.round((currentStep / totalSteps) * 100));
-  const bar = progressBar();
-  if (bar) {
-    bar.style.width = `${percent}%`;
-    bar.textContent = `${percent}%`;
-  }
-}
-
-export function finishLoading() {
-  const screen = document.getElementById('loading-screen');
-  if (screen) {
-    screen.classList.add('fade-out');
-    setTimeout(() => {
-      screen.remove();
-    }, 300);
-  }
-}
-
-export function showError(id, text) {
+export function showError(id, msg) {
   const el = document.getElementById(id);
-  if (el) el.textContent = text;
+  if (el) el.textContent = msg;
 }
 
-export function updateSnapshot(data) {
-  const list = [
-    { key: 'bitcoin', prefix: 'btc' },
-    { key: 'ethereum', prefix: 'eth' },
-    { key: 'raydium', prefix: 'ray' },
+export function clearError(id) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = '';
+}
+
+export function renderSnapshot(data) {
+  const pairs = [
+    { key: 'bitcoin', pre: 'btc' },
+    { key: 'ethereum', pre: 'eth' },
+    { key: 'raydium', pre: 'ray' },
   ];
-  list.forEach(item => {
-    const price = data[item.key].usd;
-    const change = data[item.key].usd_24h_change;
-    const priceEl = document.getElementById(`${item.prefix}-price`);
-    const changeEl = document.getElementById(`${item.prefix}-change`);
+  pairs.forEach(p => {
+    const priceEl = document.getElementById(`${p.pre}-price`);
+    const changeEl = document.getElementById(`${p.pre}-change`);
+    const price = data[p.key].usd;
+    const change = data[p.key].usd_24h_change;
     if (priceEl) priceEl.textContent = `$${price.toLocaleString('en-US')}`;
     if (changeEl) {
       const arrow = change >= 0 ? 'bi-arrow-up' : 'bi-arrow-down';
@@ -58,11 +62,11 @@ export function updateSnapshot(data) {
       changeEl.className = change >= 0 ? 'price-change-up' : 'price-change-down';
     }
   });
-  const updated = document.getElementById('prices-updated');
-  if (updated) updated.textContent = `Actualizado: ${new Date().toLocaleTimeString()}`;
+  const upd = document.getElementById('prices-updated');
+  if (upd) upd.textContent = `Actualizado: ${new Date().toLocaleTimeString()}`;
 }
 
-export function updateNews(items) {
+export function renderNews(items) {
   const list = document.getElementById('news-list');
   if (!list) return;
   list.innerHTML = '';

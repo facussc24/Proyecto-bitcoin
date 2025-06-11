@@ -43,7 +43,7 @@ export function renderVolumes(ctx, labels, datasets, onComplete) {
   });
 }
 
-export function renderFngGauge(ctx, value, onComplete) {
+export function renderGauge(ctx, value, onComplete) {
   return new Chart(ctx, {
     type: 'gauge',
     data: {
