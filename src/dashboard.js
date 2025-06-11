@@ -26,17 +26,42 @@ export async function fetchBtcAndFng() {
       type: 'line',
       data: {
         labels,
-        datasets: [{
-          label: 'BTC Precio (USD)',
-          data: btcValues,
-          borderColor: '#ff9900',
-          tension: 0.1,
-          fill: false
-        }]
+        datasets: [
+          {
+            label: 'BTC Precio (USD)',
+            data: btcValues,
+            borderColor: '#ff9900',
+            tension: 0.1,
+            fill: false,
+            yAxisID: 'y'
+          },
+          {
+            label: 'Fear & Greed',
+            data: fngValues,
+            borderColor: '#007bff',
+            tension: 0.1,
+            fill: false,
+            yAxisID: 'fng'
+          }
+        ]
       },
       options: {
         maintainAspectRatio: true,
-        scales: { y: { type: 'linear', position: 'left', title: { display: true, text: 'Precio USD' } } }
+        scales: {
+          y: {
+            type: 'linear',
+            position: 'left',
+            title: { display: true, text: 'Precio USD' }
+          },
+          fng: {
+            type: 'linear',
+            position: 'right',
+            min: 0,
+            max: 100,
+            title: { display: true, text: 'F&G' },
+            grid: { drawOnChartArea: false }
+          }
+        }
       }
     });
 
@@ -77,11 +102,14 @@ export async function fetchGoogleNews() {
     data.items.slice(0, 10).forEach(item => {
       const li = document.createElement('li');
       li.className = 'list-group-item';
-      const a = document.createElement('a');
-      a.href = item.link;
-      a.textContent = item.title || 'Sin título';
-      a.target = '_blank';
-      li.appendChild(a);
+      const date = new Date(item.pubDate).toLocaleDateString();
+      const snippet = item.description || item.contentSnippet || '';
+      li.innerHTML = `
+        <div class="news-item">
+          <a href="${item.link}" target="_blank">${item.title || 'Sin título'}</a>
+          <small class="text-muted d-block">${date}</small>
+          <p class="mb-0">${snippet}</p>
+        </div>`;
       list.appendChild(li);
     });
   } catch (err) {
