@@ -1,21 +1,25 @@
-# Bitcoin Dashboard
+# Crypto Dashboard
 
-This project contains a small dashboard (`index.html`) that displays Bitcoin price data, the Fear & Greed index, an ETH/BTC chart, RAY indicators and a link to our Telegram group. The page uses **Bootswatch** for styling and **Chart.js** for the BTC chart. JavaScript code lives in `src/dashboard.js`.
-The RAY section now compares its trading volume against PancakeSwap (CAKE) and Cetus.
+This project provides a lightweight dashboard (`index.html`) that displays real‑time cryptocurrency information. It uses **Bootswatch Flatly** for styling and **Chart.js** to render the graphs.
 
-The layout now includes a responsive navbar, a hero banner and a footer. Custom styles and images live under the `assets/` folder.
+JavaScript code is organised in ES modules under `assets/js/`:
+
+- `api.js` – all API requests
+- `charts.js` – Chart.js configuration helpers
+- `ui.js` – DOM helpers and loading screen
+- `main.js` – orchestrates data fetching and rendering
 
 ## Running locally
 
-1. Install dependencies:
+1. Install dependencies (only required for tests and asset extraction):
    ```bash
    npm install
    ```
-2. Decode the asset files:
+2. Decode image assets (optional):
    ```bash
    npm run extract-assets
    ```
-3. Serve the page (for example with Python) and open it in your browser:
+3. Serve the page and open it in your browser:
    ```bash
    python -m http.server
    # then visit http://localhost:8000/index.html
@@ -31,42 +35,14 @@ Run the automated tests with:
 npm test
 ```
 
-## Dependencies
+## APIs used
 
-- **Bootswatch** (Cerulean theme) [`bootswatch@5.3.2`](https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/cerulean/bootstrap.min.css)
-- **Bootstrap JS** [`bootstrap@5.3.2`](https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js)
-- **Chart.js** [`chart.js@3.9.1`](https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js)
-- **chartjs-gauge-v3** [`chartjs-gauge-v3@3.0.0`](https://cdn.jsdelivr.net/npm/chartjs-gauge-v3@3.0.0/dist/index.min.js)
+- **CoinGecko** – prices and historical market data
+- **Alternative.me** – Fear & Greed index
+- **Google News RSS (via rss2json)** – latest cryptocurrency headlines
 
-The gauge showing the Fear & Greed index relies on this plugin and is loaded automatically from the CDN when you open `index.html`.
+## Available scripts
 
-## Customizing API endpoints
+- `npm test` – run Jest unit tests
+- `npm run extract-assets` – decode images from `assets/img/*.txt`
 
-The dashboard uses several public APIs. You can change them inside `src/dashboard.js`:
-
-- **Fear & Greed index**: `https://api.alternative.me/fng/?limit=30`
-- **Bitcoin prices**: `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily`
-- **Raydium data**: `https://api.coingecko.com/api/v3/coins/raydium/market_chart?vs_currency=usd&days=30&interval=daily`
-- **PancakeSwap data**: `https://api.coingecko.com/api/v3/coins/pancakeswap-token/market_chart?vs_currency=usd&days=30&interval=daily`
-- **Cetus data**: `https://api.coingecko.com/api/v3/coins/cetus-protocol/market_chart?vs_currency=usd&days=30&interval=daily`
-- **Telegram group**: <https://t.me/NewsAgregatorBtCryptoWhale>
-
-The news section has been replaced with a simple link to our Telegram group where updates are posted regularly.
-
-## Adding images
-
-Place your images in the `assets/img/` directory and reference them from HTML or CSS using a relative path, e.g. `assets/img/my-photo.jpg`.
-The default logo and hero background are provided only as Base64 text files so that no binary files are tracked in Git.
-
-### Extracting provided images
-
-Some platforms do not allow binary files to be checked in directly. For that case,
-the repository also includes the images encoded as Base64 text (`logo.txt` and
-`hero-bg.txt`). Decode them with the npm script:
-
-```bash
-npm run extract-assets
-```
-
-After running the script you will have `assets/img/logo.png` and `assets/img/hero-bg.jpg`
-ready to use.
