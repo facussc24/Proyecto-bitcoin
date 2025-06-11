@@ -49,83 +49,103 @@
 
 <script>
 async function fetchBtcAndFng() {
-  const [fngRes, btcRes] = await Promise.all([
-    fetch('https://api.alternative.me/fng/?limit=30'),
-    fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily')
-  ]);
-  const fngJson = await fngRes.json();
-  const btcJson = await btcRes.json();
-  const fngData = fngJson.data.reverse();
-  const btcPrices = btcJson.prices;
+  try {
+    const [fngRes, btcRes] = await Promise.all([
+      fetch('https://api.alternative.me/fng/?limit=30'),
+      fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily')
+    ]);
+    const fngJson = await fngRes.json();
+    const btcJson = await btcRes.json();
+    const fngData = fngJson.data.reverse();
+    const btcPrices = btcJson.prices;
 
-  const labels = fngData.map((e,i) => {
-    const d = new Date(e.timestamp * 1000);
-    return d.toISOString().split('T')[0];
-  });
-  const fngValues = fngData.map(e => Number(e.value));
-  const btcValues = btcPrices.map(p => p[1]);
-  const bgColors = fngValues.map(v => v > 50 ? 'rgba(0,200,0,0.6)' : 'rgba(200,0,0,0.6)');
+    const labels = fngData.map((e,i) => {
+      const d = new Date(e.timestamp * 1000);
+      return d.toISOString().split('T')[0];
+    });
+    const fngValues = fngData.map(e => Number(e.value));
+    const btcValues = btcPrices.map(p => p[1]);
+    const bgColors = fngValues.map(v => v > 50 ? 'rgba(0,200,0,0.6)' : 'rgba(200,0,0,0.6)');
 
-  const ctx = document.getElementById('btcFngChart').getContext('2d');
-  new Chart(ctx, {
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          type: 'line',
-          label: 'BTC Precio (USD)',
-          data: btcValues,
-          borderColor: '#ff9900',
-          yAxisID: 'y1',
-          tension: 0.1,
-          fill: false
-        },
-        {
-          type: 'bar',
-          label: 'Fear & Greed',
-          data: fngValues,
-          backgroundColor: bgColors,
-          yAxisID: 'y2'
+    const ctx = document.getElementById('btcFngChart').getContext('2d');
+    new Chart(ctx, {
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            type: 'line',
+            label: 'BTC Precio (USD)',
+            data: btcValues,
+            borderColor: '#ff9900',
+            yAxisID: 'y1',
+            tension: 0.1,
+            fill: false
+          },
+          {
+            type: 'bar',
+            label: 'Fear & Greed',
+            data: fngValues,
+            backgroundColor: bgColors,
+            yAxisID: 'y2'
+          }
+        ]
+      },
+      options: {
+      maintainAspectRatio: true,
+        scales: {
+          y1: { type: 'linear', position: 'left', title: { display: true, text: 'Precio USD' } },
+          y2: { type: 'linear', position: 'right', min: 0, max: 100, title: { display: true, text: 'F&G' }, grid: { drawOnChartArea: false } }
         }
-      ]
-    },
-    options: {
-    maintainAspectRatio: true,
-      scales: {
-        y1: { type: 'linear', position: 'left', title: { display: true, text: 'Precio USD' } },
-        y2: { type: 'linear', position: 'right', min: 0, max: 100, title: { display: true, text: 'F&G' }, grid: { drawOnChartArea: false } }
       }
-    }
-  });
+    });
+  } catch (err) {
+    console.error('Error fetching BTC & FNG data', err);
+    const canvas = document.getElementById('btcFngChart');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = '16px sans-serif';
+    ctx.fillText('Datos no disponibles', 10, 50);
+    if (window.alert) alert('No se pudieron obtener datos de BTC/F&G');
+  }
 }
 
 async function fetchBtcVsEth() {
-  const [btcRes, ethRes] = await Promise.all([
-    fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily'),
-    fetch('https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=30&interval=daily')
-  ]);
-  const btcJson = await btcRes.json();
-  const ethJson = await ethRes.json();
-  const labels = btcJson.prices.map(p => new Date(p[0]).toISOString().split('T')[0]);
-  const btcPrices = btcJson.prices.map(p => p[1]);
-  const ethPrices = ethJson.prices.map(p => p[1]);
+  try {
+    const [btcRes, ethRes] = await Promise.all([
+      fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily'),
+      fetch('https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=30&interval=daily')
+    ]);
+    const btcJson = await btcRes.json();
+    const ethJson = await ethRes.json();
+    const labels = btcJson.prices.map(p => new Date(p[0]).toISOString().split('T')[0]);
+    const btcPrices = btcJson.prices.map(p => p[1]);
+    const ethPrices = ethJson.prices.map(p => p[1]);
 
-  const ctx = document.getElementById('btcEthChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [
-        { label: 'BTC', data: btcPrices, borderColor: '#f2a900', fill: false, tension: 0.1 },
-        { label: 'ETH', data: ethPrices, borderColor: '#627eea', fill: false, tension: 0.1 }
-      ]
-    },
-    options: {
-      scales: {
-        y: { beginAtZero: false }
+    const ctx = document.getElementById('btcEthChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          { label: 'BTC', data: btcPrices, borderColor: '#f2a900', fill: false, tension: 0.1 },
+          { label: 'ETH', data: ethPrices, borderColor: '#627eea', fill: false, tension: 0.1 }
+        ]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: false }
+        }
       }
-    }
-  });
+    });
+  } catch (err) {
+    console.error('Error fetching BTC vs ETH data', err);
+    const canvas = document.getElementById('btcEthChart');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = '16px sans-serif';
+    ctx.fillText('Datos no disponibles', 10, 50);
+    if (window.alert) alert('No se pudieron obtener datos de BTC vs ETH');
+  }
 }
 
 async function fetchRayNews() {
