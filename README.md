@@ -8,7 +8,11 @@ This project contains a small dashboard (`index.html`) that displays Bitcoin pri
    ```bash
    npm install
    ```
-2. Serve the page (for example with Python) and open it in your browser:
+2. Generate the image assets (not tracked in git):
+   ```bash
+   node scripts/extract_assets.js
+   ```
+3. Serve the page (for example with Python) and open it in your browser:
    ```bash
    python -m http.server
    # then visit http://localhost:8000/index.html
