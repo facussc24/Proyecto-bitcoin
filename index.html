@@ -41,6 +41,11 @@
     <section id="btc-section" class="mb-4">
       <div id="btc-fng-card" class="card p-3">
         <h2 class="h4">BTC Price vs Fear &amp; Greed Index</h2>
+        <div id="btc-spinner" class="text-center my-3 d-none">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
         <canvas id="btcFngChart" height="300"></canvas>
         <canvas id="fngGauge" height="200"></canvas>
       </div>
@@ -56,6 +61,11 @@
   <section id="ray-section" class="mb-4">
     <div class="card p-3">
       <h2 class="h4">RAY</h2>
+      <div id="ray-spinner" class="text-center my-3 d-none">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
       <canvas id="rayPriceChart" height="300"></canvas>
       <canvas id="rayVolumeChart" height="300"></canvas>
     </div>
@@ -64,6 +74,11 @@
   <section id="defi-section" class="mb-4">
     <div class="card p-3">
       <h2 class="h4">Comparativa DeFi</h2>
+      <div id="defi-spinner" class="text-center my-3 d-none">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
       <div class="table-responsive">
         <table id="defi-table" class="table table-striped">
           <thead>
@@ -86,6 +101,11 @@
   <section id="google-news-section" class="mb-4">
     <div class="card p-3">
       <h2 class="h4">Noticias de Bitcoin</h2>
+      <div id="news-spinner" class="text-center my-3 d-none">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
           <div class="news-container">
             <ul id="google-news-list" class="list-group"></ul>
           </div>

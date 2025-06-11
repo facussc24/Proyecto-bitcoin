@@ -2,8 +2,10 @@ export async function fetchBtcAndFng() {
   const card = document.getElementById('btc-fng-card');
   const priceCanvas = document.getElementById('btcFngChart');
   const gaugeCanvas = document.getElementById('fngGauge');
+  const loader = document.getElementById('btc-spinner');
   if (!priceCanvas || !card || !gaugeCanvas) return;
 
+  loader?.classList.remove('d-none');
   try {
     const [fngRes, btcRes] = await Promise.all([
       fetch('https://api.alternative.me/fng/?limit=30'),
@@ -89,12 +91,16 @@ export async function fetchBtcAndFng() {
     msg.className = 'text-danger error-message';
     msg.textContent = 'Datos de BTC/F&G no disponibles';
     card.appendChild(msg);
+  } finally {
+    loader?.classList.add('d-none');
   }
 }
 
 export async function fetchGoogleNews() {
   const list = document.getElementById('google-news-list');
+  const loader = document.getElementById('news-spinner');
   if (!list) return;
+  loader?.classList.remove('d-none');
   try {
     const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://news.google.com/rss/search?q=bitcoin', {cache: 'no-store'});
     const data = await res.json();
@@ -115,13 +121,18 @@ export async function fetchGoogleNews() {
   } catch (err) {
     console.error('Error fetching news', err);
     list.innerHTML = '<li class="list-group-item text-danger">No se pudo cargar el feed</li>';
+  } finally {
+    loader?.classList.add('d-none');
   }
 }
 
 export async function fetchRayData() {
   const priceCanvas = document.getElementById('rayPriceChart');
   const volumeCanvas = document.getElementById('rayVolumeChart');
+  const loader = document.getElementById('ray-spinner');
   if (!priceCanvas || !volumeCanvas) return;
+
+  loader?.classList.remove('d-none');
 
   try {
     const [rayRes, cakeRes, cetusRes] = await Promise.all([
@@ -189,13 +200,18 @@ export async function fetchRayData() {
     });
   } catch (err) {
     console.error('Error fetching RAY data', err);
+  } finally {
+    loader?.classList.add('d-none');
   }
 }
 
 export async function fetchDefiComparison() {
   const tableBody = document.querySelector('#defi-table tbody');
   const errorEl = document.getElementById('defi-error');
+  const loader = document.getElementById('defi-spinner');
   if (!tableBody) return;
+
+  loader?.classList.remove('d-none');
 
   const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     .toISOString();
@@ -278,6 +294,8 @@ export async function fetchDefiComparison() {
   } catch (err) {
     console.error('Error fetching DeFi data', err);
     errorEl.textContent = 'No se pudo cargar la tabla DeFi';
+  } finally {
+    loader?.classList.add('d-none');
   }
 }
 
