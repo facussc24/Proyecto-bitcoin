@@ -64,6 +64,9 @@ export const VOLUME_PROTOCOLS = [
   { id: 'cetus-protocol', symbol: 'CETUS' },
   { id: 'orca', symbol: 'ORCA' },
   { id: 'uniswap', symbol: 'UNI' },
+  { id: 'sushi', symbol: 'SUSHI' },
+  { id: 'curve-dao-token', symbol: 'CRV' },
+  { id: '1inch', symbol: '1INCH' },
 ];
 
 export async function fetchVolumes() {

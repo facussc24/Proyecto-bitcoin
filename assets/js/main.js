@@ -118,6 +118,9 @@ function loadVolumes(tick) {
         CETUS: { borderColor: '#20c997', borderDash: [5, 2] },
         ORCA: { borderColor: '#ffc107', borderDash: [2, 3] },
         UNI: { borderColor: '#6610f2', borderDash: [3, 3] },
+        SUSHI: { borderColor: '#fd7e14', borderDash: [4, 4] },
+        CRV: { borderColor: '#6f42c1', borderDash: [1, 2] },
+        '1INCH': { borderColor: '#d63384', borderDash: [4, 2] },
       };
 
       const sets = d.datasets.map(ds => {
@@ -157,6 +160,9 @@ function loadVolumes(tick) {
           CETUS: { borderColor: '#20c997', borderDash: [5, 2] },
           ORCA: { borderColor: '#ffc107', borderDash: [2, 3] },
           UNI: { borderColor: '#6610f2', borderDash: [3, 3] },
+          SUSHI: { borderColor: '#fd7e14', borderDash: [4, 4] },
+          CRV: { borderColor: '#6f42c1', borderDash: [1, 2] },
+          '1INCH': { borderColor: '#d63384', borderDash: [4, 2] },
         };
         const sets = OFFLINE_DATA.volumes.datasets.map(ds => ({
           label: ds.label,
