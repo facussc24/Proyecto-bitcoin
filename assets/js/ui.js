@@ -1,7 +1,13 @@
 // Gestiona la pantalla de carga y utilidades de interfaz
+import { Chart } from './vendor/chart.esm.js';
+import { GaugeController } from './vendor/chartjs-gauge.esm.js';
+
+Chart.register(GaugeController);
+
 let totalTasks = 0;
 let completed = 0;
 let forceTimeout;
+let fngChart;
 
 function hideLoader() {
   const screen = document.getElementById('loader-screen');
@@ -86,17 +92,35 @@ export function setUpdated(id, date = new Date()) {
 }
 
 export function renderFngGauge(data) {
-  const bar = document.getElementById('fng-bar');
+  const canvas = document.getElementById('fngGauge');
   const label = document.getElementById('fng-label');
-  if (!bar || !label) return;
-  const { value, classification } = typeof data === 'object' ? data : { value: data, classification: '' };
-  bar.style.width = `${value}%`;
-  let color = '#0d6efd';
-  if (value < 25) color = '#dc3545';
-  else if (value < 50) color = '#fd7e14';
-  else if (value < 75) color = '#ffc107';
-  else color = '#198754';
-  bar.style.backgroundColor = color;
+  if (!canvas || !label) return;
+  const { value, classification } =
+    typeof data === 'object' ? data : { value: data, classification: '' };
+
+  if (fngChart) {
+    fngChart.data.datasets[0].value = value;
+    fngChart.update();
+  } else {
+    fngChart = new Chart(canvas.getContext('2d'), {
+      type: 'gauge',
+      data: {
+        datasets: [
+          {
+            value,
+            data: [25, 25, 25, 25],
+            minValue: 0,
+            backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#198754'],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        needle: { radius: '2%', width: '3.2%', length: '80%' },
+        valueLabel: { display: true },
+      },
+    });
+  }
   label.textContent = classification ? `${classification} (${value})` : value;
   setUpdated('fng-updated');
 }
