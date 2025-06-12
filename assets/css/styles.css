@@ -31,5 +31,13 @@ body {
 }
 
 #volumeChart {
-  max-height: 400px;
+  max-height: 300px;
+}
+
+#fngGauge {
+  max-height: 180px;
+}
+
+main.container-lg {
+  max-width: 960px;
 }

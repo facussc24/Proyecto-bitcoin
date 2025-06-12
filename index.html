@@ -19,7 +19,7 @@
   </div>
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
+    <div class="container-lg">
       <span class="navbar-brand">Crypto Dashboard</span>
       <div class="ms-auto">
         <a href="https://t.me/NewsAgregatorBtCryptoWhale" target="_blank" class="nav-link text-white">
@@ -29,7 +29,13 @@
     </div>
   </nav>
 
-  <main class="container my-4">
+  <header class="bg-light py-3">
+    <div class="container-lg text-center">
+      <h1 class="display-6 mb-0">Crypto Dashboard</h1>
+      <p class="text-muted">Precios, volúmenes y noticias actualizados</p>
+    </div>
+  </header>
+  <main class="container-lg my-4">
     <div class="row g-4 mb-4">
       <div class="col-md-4">
         <div class="card p-3 text-center">
@@ -57,7 +63,7 @@
       </div>
       <div class="col-md-4 d-flex flex-column align-items-center">
         <h2 class="h6">Miedo &amp; Codicia</h2>
-        <canvas id="fngGauge" height="200" aria-label="Fear &amp; Greed" role="img"></canvas>
+        <canvas id="fngGauge" height="180" aria-label="Fear &amp; Greed" role="img"></canvas>
         <div id="fng-label" class="fw-bold"></div>
         <small id="fng-updated" class="text-muted mt-1"></small>
         <button id="refresh-fng" class="btn btn-sm btn-outline-primary mt-2">Actualizar</button>
