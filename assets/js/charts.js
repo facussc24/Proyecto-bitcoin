@@ -1,4 +1,4 @@
-import { Chart, registerables } from '../vendor/chart.esm.js';
+import { Chart, registerables } from './vendor/chart.esm.js';
 import { setUpdated } from './ui.js';
 
 Chart.register(...registerables);

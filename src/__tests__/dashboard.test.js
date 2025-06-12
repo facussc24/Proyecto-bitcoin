@@ -1,6 +1,6 @@
 import {jest} from "@jest/globals";
 import {fetchGoogleNews, fetchBtcAndFng, fetchRayData, initTradingView} from '../dashboard.js';
-import {fetchSnapshot} from '../../assets/js/modules/api.js';
+import {fetchSnapshot} from '../../assets/js/api.js';
 
 describe('dashboard functions', () => {
   beforeEach(() => {
