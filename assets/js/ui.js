@@ -102,11 +102,15 @@ export function renderFngGauge(data) {
   const canvas = document.getElementById('fngGauge');
   const label = document.getElementById('fng-label');
   if (!canvas || !label) return;
-  const { value, classification } =
-    typeof data === 'object' ? data : { value: data, classification: '' };
+  const { value: rawValue, classification = '' } =
+    typeof data === 'object' ? data : { value: data };
+  const value = Number(rawValue);
+  const valid = Number.isFinite(value);
+
+  const val = valid ? value : 0;
 
   if (fngChart) {
-    fngChart.data.datasets[0].value = value;
+    fngChart.data.datasets[0].value = val;
     fngChart.update();
   } else {
     fngChart = new Chart(canvas.getContext('2d'), {
@@ -114,7 +118,7 @@ export function renderFngGauge(data) {
       data: {
         datasets: [
           {
-            value,
+            value: val,
             data: [25, 25, 25, 25],
             minValue: 0,
             backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#198754'],
@@ -128,6 +132,10 @@ export function renderFngGauge(data) {
       },
     });
   }
-  label.textContent = classification ? `${classification} (${value})` : value;
+  label.textContent = valid && classification
+    ? `${classification} (${value})`
+    : valid
+    ? String(value)
+    : 'N/A';
   setUpdated('fng-updated');
 }
