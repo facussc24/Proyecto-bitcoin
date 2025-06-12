@@ -14,6 +14,7 @@ import {
   renderFngGauge,
   setUpdated,
 } from './ui.js';
+import { OFFLINE_DATA } from '../data/offlineData.js';
 
 const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
@@ -57,6 +58,9 @@ function loadSnapshot(tick) {
       if (cached) {
         renderSnapshot(cached.data);
         setUpdated('prices-updated', cached.ts);
+      } else if (OFFLINE_DATA.snapshot) {
+        renderSnapshot(OFFLINE_DATA.snapshot);
+        setUpdated('prices-updated');
       } else {
         showError('prices-error', 'Datos no disponibles');
       }
@@ -90,6 +94,13 @@ function loadEthBtc(tick) {
           cached.data.ratios
         );
         setUpdated('ethbtc-updated', cached.ts);
+      } else if (OFFLINE_DATA.ethbtc) {
+        renderEthBtc(
+          document.getElementById('ethbtcChart'),
+          OFFLINE_DATA.ethbtc.labels,
+          OFFLINE_DATA.ethbtc.ratios
+        );
+        setUpdated('ethbtc-updated');
       } else {
         showError('ethbtc-error', 'Datos no disponibles');
       }
@@ -139,6 +150,27 @@ function loadVolumes(tick) {
           cached.data.sets
         );
         setUpdated('volume-updated', cached.ts);
+      } else if (OFFLINE_DATA.volumes) {
+        const styleMap = {
+          RAY: { borderColor: '#0d6efd' },
+          CAKE: { borderColor: '#adb5bd', borderDash: [5, 5] },
+          CETUS: { borderColor: '#20c997', borderDash: [5, 2] },
+          ORCA: { borderColor: '#ffc107', borderDash: [2, 3] },
+          UNI: { borderColor: '#6610f2', borderDash: [3, 3] },
+        };
+        const sets = OFFLINE_DATA.volumes.datasets.map(ds => ({
+          label: ds.label,
+          data: ds.data,
+          tension: 0.2,
+          fill: false,
+          ...(styleMap[ds.label] || {}),
+        }));
+        renderVolumes(
+          document.getElementById('volumeChart'),
+          OFFLINE_DATA.volumes.labels,
+          sets
+        );
+        setUpdated('volume-updated');
       } else {
         showError('volume-error', 'Datos no disponibles');
       }
@@ -164,6 +196,9 @@ function loadGauge(tick) {
       if (cached) {
         renderFngGauge(cached.data);
         setUpdated('fng-updated', cached.ts);
+      } else if (OFFLINE_DATA.fng) {
+        renderFngGauge(OFFLINE_DATA.fng);
+        setUpdated('fng-updated');
       } else {
         showError('fng-error', 'Datos no disponibles');
       }
@@ -189,6 +224,9 @@ function loadNews(tick) {
       if (cached) {
         renderNews(cached.data);
         setUpdated('news-updated', cached.ts);
+      } else if (OFFLINE_DATA.news) {
+        renderNews(OFFLINE_DATA.news);
+        setUpdated('news-updated');
       } else {
         showError('news-error', 'Datos no disponibles');
       }

@@ -25,7 +25,7 @@ JavaScript code is organised in ES modules under `assets/js/`:
    # then visit http://localhost:8000/index.html
    ```
 
-The dashboard fetches live data from the internet so an active connection is required. Data automatically refreshes every 5 minutes. Each section also has an **Actualizar** button to manually trigger a refresh at any time.
+The dashboard fetches live data from the internet, so an active connection is normally required. If the network is unavailable and no cached data exists, a small set of bundled example data is displayed so the charts remain visible. Data automatically refreshes every 5 minutes. Each section also has an **Actualizar** button to manually trigger a refresh at any time.
 
 ## Tests
 
