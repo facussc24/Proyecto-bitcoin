@@ -17,6 +17,7 @@ import {
 import { OFFLINE_DATA } from '../data/offlineData.js';
 
 const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = REFRESH_INTERVAL;
 
 function isEqual(a, b) {
   return JSON.stringify(a) === JSON.stringify(b);
@@ -40,8 +41,23 @@ function cacheGet(key) {
   }
 }
 
+function cacheGetFresh(key, maxAge = CACHE_TTL) {
+  const cached = cacheGet(key);
+  if (cached && Date.now() - cached.ts < maxAge) {
+    return cached;
+  }
+  return null;
+}
+
 function loadSnapshot(tick) {
   const t = tick || initLoader(1);
+  const cachedFresh = cacheGetFresh('snapshot');
+  if (cachedFresh) {
+    renderSnapshot(cachedFresh.data);
+    setUpdated('prices-updated', cachedFresh.ts);
+    t();
+    return Promise.resolve();
+  }
   return fetchSnapshot()
     .then(data => {
       const cached = cacheGet('snapshot');
@@ -70,6 +86,17 @@ function loadSnapshot(tick) {
 
 function loadEthBtc(tick) {
   const t = tick || initLoader(1);
+  const cachedFresh = cacheGetFresh('ethbtc');
+  if (cachedFresh) {
+    renderEthBtc(
+      document.getElementById('ethbtcChart'),
+      cachedFresh.data.labels,
+      cachedFresh.data.ratios
+    );
+    setUpdated('ethbtc-updated', cachedFresh.ts);
+    t();
+    return Promise.resolve();
+  }
   return fetchEthBtc()
     .then(d => {
       const cached = cacheGet('ethbtc');
@@ -110,6 +137,17 @@ function loadEthBtc(tick) {
 
 function loadVolumes(tick) {
   const t = tick || initLoader(1);
+  const cachedFresh = cacheGetFresh('volumes');
+  if (cachedFresh) {
+    renderVolumes(
+      document.getElementById('volumeChart'),
+      cachedFresh.data.labels,
+      cachedFresh.data.sets
+    );
+    setUpdated('volume-updated', cachedFresh.ts);
+    t();
+    return Promise.resolve();
+  }
   return fetchVolumes()
     .then(d => {
       const styleMap = {
@@ -199,6 +237,13 @@ function loadVolumes(tick) {
 
 function loadGauge(tick) {
   const t = tick || initLoader(1);
+  const cachedFresh = cacheGetFresh('fng');
+  if (cachedFresh) {
+    renderFngGauge(cachedFresh.data);
+    setUpdated('fng-updated', cachedFresh.ts);
+    t();
+    return Promise.resolve();
+  }
   return fetchGauge()
     .then(data => {
       const cached = cacheGet('fng');
@@ -227,6 +272,13 @@ function loadGauge(tick) {
 
 function loadNews(tick) {
   const t = tick || initLoader(1);
+  const cachedFresh = cacheGetFresh('news');
+  if (cachedFresh) {
+    renderNews(cachedFresh.data);
+    setUpdated('news-updated', cachedFresh.ts);
+    t();
+    return Promise.resolve();
+  }
   return fetchNews()
     .then(data => {
       const cached = cacheGet('news');
