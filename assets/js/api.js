@@ -25,6 +25,7 @@ async function getJSON(url, retries = 2) {
 
 /** CoinGecko: precios y cambios 24h */
 export async function fetchSnapshot() {
+  console.log('fetchSnapshot');
   try {
     return await getJSON(
       'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,raydium&vs_currencies=usd&include_24hr_change=true'
@@ -37,10 +38,15 @@ export async function fetchSnapshot() {
 
 /** CoinGecko: histórico ETH/BTC */
 export async function fetchEthBtc() {
+  console.log('fetchEthBtc');
   try {
     const [eth, btc] = await Promise.all([
-      getJSON('https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=30&interval=daily'),
-      getJSON('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily'),
+      getJSON(
+        'https://api.coingecko.com/api/v3/coins/ethereum/market_chart?vs_currency=usd&days=30&interval=daily'
+      ),
+      getJSON(
+        'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily'
+      ),
     ]);
     const labels = eth.prices.map(p => new Date(p[0]).toISOString().split('T')[0]);
     const ratios = eth.prices.map((p, i) => p[1] / btc.prices[i][1]);
@@ -52,34 +58,56 @@ export async function fetchEthBtc() {
 }
 
 /** CoinGecko: volúmenes de varios tokens */
+export const VOLUME_PROTOCOLS = [
+  { id: 'raydium', symbol: 'RAY' },
+  { id: 'pancakeswap-token', symbol: 'CAKE' },
+  { id: 'cetus-protocol', symbol: 'CETUS' },
+  { id: 'orca', symbol: 'ORCA' },
+  { id: 'uniswap', symbol: 'UNI' },
+];
+
 export async function fetchVolumes() {
-  try {
-    const [ray, cake, cetus, orca] = await Promise.all([
-      getJSON('https://api.coingecko.com/api/v3/coins/raydium/market_chart?vs_currency=usd&days=30&interval=daily'),
-      getJSON('https://api.coingecko.com/api/v3/coins/pancakeswap-token/market_chart?vs_currency=usd&days=30&interval=daily'),
-      getJSON('https://api.coingecko.com/api/v3/coins/cetus-protocol/market_chart?vs_currency=usd&days=30&interval=daily'),
-      getJSON('https://api.coingecko.com/api/v3/coins/orca/market_chart?vs_currency=usd&days=30&interval=daily'),
-    ]);
-    const labels = ray.total_volumes.map(v => new Date(v[0]).toISOString().split('T')[0]);
-    const rayVol = ray.total_volumes.map(v => v[1]);
-    const cakeVol = cake.total_volumes.map(v => v[1]);
-    const cetusVol = cetus.total_volumes.map(v => v[1]);
-    const orcaVol = orca.total_volumes.map(v => v[1]);
-    return { labels, rayVol, cakeVol, cetusVol, orcaVol };
-  } catch (err) {
-    console.error('Volúmenes', err);
-    throw err;
-  }
+  console.log('fetchVolumes');
+  const protocols = VOLUME_PROTOCOLS;
+
+  const results = await Promise.allSettled(
+    protocols.map(p =>
+      getJSON(
+        `https://api.coingecko.com/api/v3/coins/${p.id}/market_chart?vs_currency=usd&days=30&interval=daily`
+      )
+    )
+  );
+
+  let labels = [];
+  const datasets = results.map((res, idx) => {
+    const proto = protocols[idx];
+    if (res.status === 'fulfilled') {
+      if (!labels.length) {
+        labels = res.value.total_volumes.map(v =>
+          new Date(v[0]).toISOString().split('T')[0]
+        );
+      }
+      return {
+        label: proto.symbol,
+        data: res.value.total_volumes.map(v => v[1]),
+      };
+    }
+    console.error(`Volúmenes ${proto.symbol}`, res.reason);
+    return { label: proto.symbol, data: null };
+  });
+
+  return { labels, datasets };
 }
 
 /** Alternative.me: Fear & Greed */
 export async function fetchGauge() {
+  console.log('fetchGauge');
   try {
     const data = await getJSON('https://api.alternative.me/fng/?limit=1&format=json');
     const latest = data.data[0];
     return {
       value: Number(latest.value),
-      classification: latest.value_classification
+      classification: latest.value_classification,
     };
   } catch (err) {
     console.error('F&G', err);
@@ -89,9 +117,13 @@ export async function fetchGauge() {
 
 /** Noticias vía RSS */
 export async function fetchNews() {
+  console.log('fetchNews');
+  const rss = 'https://news.google.com/rss/search?q=cryptocurrency&hl=es&gl=ES&ceid=ES:es';
+  const url = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rss)}`)}`;
   try {
-    const data = await getJSON('https://api.rss2json.com/v1/api.json?rss_url=https://news.google.com/rss/search?q=cryptocurrency&hl=es&gl=ES&ceid=ES:es');
-    return data.items.slice(0, 5).map(it => ({ title: it.title, link: it.link, date: it.pubDate }));
+    const data = await getJSON(url);
+    const json = typeof data.contents === 'string' ? JSON.parse(data.contents) : data;
+    return json.items.slice(0, 5).map(it => ({ title: it.title, link: it.link, date: it.pubDate }));
   } catch (err) {
     console.error('Noticias', err);
     throw err;

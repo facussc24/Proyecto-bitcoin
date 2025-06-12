@@ -1,6 +1,19 @@
-import { fetchSnapshot, fetchEthBtc, fetchVolumes, fetchGauge, fetchNews } from './modules/api.js';
-import { renderEthBtc, renderVolumes } from './modules/charts.js';
-import { initLoader, renderSnapshot, renderNews, showError, renderFngGauge, setUpdated } from './modules/ui.js';
+import {
+  fetchSnapshot,
+  fetchEthBtc,
+  fetchVolumes,
+  fetchGauge,
+  fetchNews,
+} from './api.js';
+import { renderEthBtc, renderVolumes } from './charts.js';
+import {
+  initLoader,
+  renderSnapshot,
+  renderNews,
+  showError,
+  renderFngGauge,
+  setUpdated,
+} from './ui.js';
 
 const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
@@ -27,6 +40,7 @@ function cacheGet(key) {
 }
 
 function start() {
+  console.log('start');
   const tick = initLoader(5);
 
   Promise.allSettled([
@@ -40,7 +54,8 @@ function start() {
         }
         cacheSet('snapshot', data);
       })
-      .catch(() => {
+      .catch(err => {
+        console.log('snapshot error', err);
         const cached = cacheGet('snapshot');
         if (cached) {
           renderSnapshot(cached.data);
@@ -65,7 +80,8 @@ function start() {
         }
         cacheSet('ethbtc', d);
       })
-      .catch(() => {
+      .catch(err => {
+        console.log('ethbtc error', err);
         const cached = cacheGet('ethbtc');
         if (cached) {
           renderEthBtc(
@@ -82,12 +98,25 @@ function start() {
 
     fetchVolumes()
       .then(d => {
-        const sets = [
-          { label: 'RAY', data: d.rayVol, borderColor: '#0d6efd', tension: 0.2, fill: false },
-          { label: 'CAKE', data: d.cakeVol, borderColor: '#adb5bd', borderDash: [5, 5], tension: 0.2, fill: false },
-          { label: 'CETUS', data: d.cetusVol, borderColor: '#20c997', borderDash: [5, 2], tension: 0.2, fill: false },
-          { label: 'ORCA', data: d.orcaVol, borderColor: '#ffc107', borderDash: [2, 3], tension: 0.2, fill: false }
-        ];
+        const styleMap = {
+          RAY: { borderColor: '#0d6efd' },
+          CAKE: { borderColor: '#adb5bd', borderDash: [5, 5] },
+          CETUS: { borderColor: '#20c997', borderDash: [5, 2] },
+          ORCA: { borderColor: '#ffc107', borderDash: [2, 3] },
+          UNI: { borderColor: '#6610f2', borderDash: [3, 3] },
+        };
+
+        const sets = d.datasets.map(ds => {
+          const style = styleMap[ds.label] || {};
+          return {
+            label: ds.data ? ds.label : `${ds.label} (Datos no disponibles)`,
+            data: ds.data || [],
+            tension: 0.2,
+            fill: false,
+            ...style,
+          };
+        });
+
         const payload = { labels: d.labels, sets };
         const cached = cacheGet('volumes');
         if (!cached || !isEqual(cached.data, payload)) {
@@ -97,7 +126,8 @@ function start() {
         }
         cacheSet('volumes', payload);
       })
-      .catch(() => {
+      .catch(err => {
+        console.log('volumes error', err);
         const cached = cacheGet('volumes');
         if (cached) {
           renderVolumes(
@@ -122,7 +152,8 @@ function start() {
         }
         cacheSet('fng', data);
       })
-      .catch(() => {
+      .catch(err => {
+        console.log('gauge error', err);
         const cached = cacheGet('fng');
         if (cached) {
           renderFngGauge(cached.data);
@@ -143,7 +174,8 @@ function start() {
         }
         cacheSet('news', data);
       })
-      .catch(() => {
+      .catch(err => {
+        console.log('news error', err);
         const cached = cacheGet('news');
         if (cached) {
           renderNews(cached.data);
@@ -157,6 +189,7 @@ function start() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('DOMContentLoaded');
   start();
   setInterval(start, REFRESH_INTERVAL);
 });
