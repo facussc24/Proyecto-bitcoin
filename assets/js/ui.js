@@ -75,12 +75,19 @@ export function renderSnapshot(data) {
 export function renderNews(items) {
   const list = document.getElementById('news-list');
   if (!list) return;
-  list.innerHTML = '';
+  list.replaceChildren();
   items.forEach(it => {
     const li = document.createElement('li');
     li.className = 'list-group-item';
-    const date = new Date(it.date).toLocaleDateString();
-    li.innerHTML = `<a href="${it.link}" target="_blank">${it.title}</a> <small class="text-muted d-block">${date}</small>`;
+    const link = document.createElement('a');
+    link.textContent = it.title;
+    link.href = it.link;
+    link.target = '_blank';
+    const dateEl = document.createElement('small');
+    dateEl.className = 'text-muted d-block';
+    dateEl.textContent = new Date(it.date).toLocaleDateString();
+    li.appendChild(link);
+    li.appendChild(dateEl);
     list.appendChild(li);
   });
   setUpdated('news-updated');
