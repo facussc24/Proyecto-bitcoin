@@ -40,6 +40,18 @@ function cacheGet(key) {
   }
 }
 
+const retryCounts = {};
+function scheduleRetry(domId, fn, delay = 15000, limit = 2) {
+  const n = retryCounts[domId] || 0;
+  if (n >= limit) {
+    showError(domId, 'Datos no disponibles');
+    return;
+  }
+  retryCounts[domId] = n + 1;
+  showError(domId, 'Reintentando...');
+  setTimeout(fn, delay);
+}
+
 function loadSnapshot(tick) {
   const t = tick || initLoader(1);
   return fetchSnapshot()
@@ -62,7 +74,7 @@ function loadSnapshot(tick) {
         renderSnapshot(OFFLINE_DATA.snapshot);
         setUpdated('prices-updated');
       } else {
-        showError('prices-error', 'Datos no disponibles');
+        scheduleRetry('prices-error', () => loadSnapshot());
       }
     })
     .finally(t);
@@ -102,7 +114,7 @@ function loadEthBtc(tick) {
         );
         setUpdated('ethbtc-updated');
       } else {
-        showError('ethbtc-error', 'Datos no disponibles');
+        scheduleRetry('ethbtc-error', () => loadEthBtc());
       }
     })
     .finally(t);
@@ -137,7 +149,7 @@ function loadVolumes(tick) {
         });
 
       if (!sets.length) {
-        showError('volume-error', 'Datos no disponibles');
+        scheduleRetry('volume-error', () => loadVolumes());
         return;
       }
 
@@ -181,7 +193,7 @@ function loadVolumes(tick) {
             ...(styleMap[ds.label] || {}),
           }));
         if (!sets.length) {
-          showError('volume-error', 'Datos no disponibles');
+          scheduleRetry('volume-error', () => loadVolumes());
           return;
         }
         renderVolumes(
@@ -191,7 +203,7 @@ function loadVolumes(tick) {
         );
         setUpdated('volume-updated');
       } else {
-        showError('volume-error', 'Datos no disponibles');
+        scheduleRetry('volume-error', () => loadVolumes());
       }
     })
     .finally(t);
@@ -219,7 +231,7 @@ function loadGauge(tick) {
         renderFngGauge(OFFLINE_DATA.fng);
         setUpdated('fng-updated');
       } else {
-        showError('fng-error', 'Datos no disponibles');
+        scheduleRetry('fng-error', () => loadGauge());
       }
     })
     .finally(t);
@@ -247,7 +259,7 @@ function loadNews(tick) {
         renderNews(OFFLINE_DATA.news);
         setUpdated('news-updated');
       } else {
-        showError('news-error', 'Datos no disponibles');
+        scheduleRetry('news-error', () => loadNews());
       }
     })
     .finally(t);
