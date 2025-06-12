@@ -82,21 +82,22 @@ export async function fetchVolumes() {
   );
 
   let labels = [];
-  const datasets = results.map((res, idx) => {
+  const datasets = [];
+  results.forEach((res, idx) => {
     const proto = protocols[idx];
-    if (res.status === 'fulfilled') {
+    if (res.status === 'fulfilled' && Array.isArray(res.value.total_volumes)) {
       if (!labels.length) {
         labels = res.value.total_volumes.map(v =>
           new Date(v[0]).toISOString().split('T')[0]
         );
       }
-      return {
+      datasets.push({
         label: proto.symbol,
         data: res.value.total_volumes.map(v => v[1]),
-      };
+      });
+    } else {
+      console.error(`Volúmenes ${proto.symbol}`, res.reason);
     }
-    console.error(`Volúmenes ${proto.symbol}`, res.reason);
-    return { label: proto.symbol, data: null };
   });
 
   return { labels, datasets };

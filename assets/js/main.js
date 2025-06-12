@@ -123,16 +123,23 @@ function loadVolumes(tick) {
         '1INCH': { borderColor: '#d63384', borderDash: [4, 2] },
       };
 
-      const sets = d.datasets.map(ds => {
-        const style = styleMap[ds.label] || {};
-        return {
-          label: ds.data ? ds.label : `${ds.label} (Datos no disponibles)`,
-          data: ds.data || [],
-          tension: 0.2,
-          fill: false,
-          ...style,
-        };
-      });
+      const sets = d.datasets
+        .filter(ds => Array.isArray(ds.data) && ds.data.length)
+        .map(ds => {
+          const style = styleMap[ds.label] || {};
+          return {
+            label: ds.label,
+            data: ds.data,
+            tension: 0.2,
+            fill: false,
+            ...style,
+          };
+        });
+
+      if (!sets.length) {
+        showError('volume-error', 'Datos no disponibles');
+        return;
+      }
 
       const payload = { labels: d.labels, sets };
       const cached = cacheGet('volumes');
@@ -164,13 +171,19 @@ function loadVolumes(tick) {
           CRV: { borderColor: '#6f42c1', borderDash: [1, 2] },
           '1INCH': { borderColor: '#d63384', borderDash: [4, 2] },
         };
-        const sets = OFFLINE_DATA.volumes.datasets.map(ds => ({
-          label: ds.label,
-          data: ds.data,
-          tension: 0.2,
-          fill: false,
-          ...(styleMap[ds.label] || {}),
-        }));
+        const sets = OFFLINE_DATA.volumes.datasets
+          .filter(ds => Array.isArray(ds.data) && ds.data.length)
+          .map(ds => ({
+            label: ds.label,
+            data: ds.data,
+            tension: 0.2,
+            fill: false,
+            ...(styleMap[ds.label] || {}),
+          }));
+        if (!sets.length) {
+          showError('volume-error', 'Datos no disponibles');
+          return;
+        }
         renderVolumes(
           document.getElementById('volumeChart'),
           OFFLINE_DATA.volumes.labels,
