@@ -11,6 +11,8 @@ export async function fetchBtcAndFng() {
       fetch('https://api.alternative.me/fng/?limit=30'),
       fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily')
     ]);
+    if (!fngRes.ok) throw new Error('Failed to fetch F&G data');
+    if (!btcRes.ok) throw new Error('Failed to fetch BTC data');
     const fngJson = await fngRes.json();
     const btcJson = await btcRes.json();
     const fngData = fngJson.data.reverse();
@@ -102,20 +104,31 @@ export async function fetchGoogleNews() {
   if (!list) return;
   loader?.classList.remove('d-none');
   try {
-    const res = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://news.google.com/rss/search?q=bitcoin', {cache: 'no-store'});
+    const rssUrl = encodeURIComponent('https://news.google.com/rss/search?q=bitcoin');
+    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to fetch news');
     const data = await res.json();
     list.innerHTML = '';
     data.items.slice(0, 10).forEach(item => {
       const li = document.createElement('li');
       li.className = 'list-group-item';
       const date = new Date(item.pubDate).toLocaleDateString();
-      const snippet = item.description || item.contentSnippet || '';
-      li.innerHTML = `
-        <div class="news-item">
-          <a href="${item.link}" target="_blank">${item.title || 'Sin título'}</a>
-          <small class="text-muted d-block">${date}</small>
-          <p class="mb-0">${snippet}</p>
-        </div>`;
+      const container = document.createElement('div');
+      container.className = 'news-item';
+      const link = document.createElement('a');
+      link.href = item.link;
+      link.target = '_blank';
+      link.textContent = item.title || 'Sin título';
+      const small = document.createElement('small');
+      small.className = 'text-muted d-block';
+      small.textContent = date;
+      const p = document.createElement('p');
+      p.className = 'mb-0';
+      p.textContent = item.description || item.contentSnippet || '';
+      container.appendChild(link);
+      container.appendChild(small);
+      container.appendChild(p);
+      li.appendChild(container);
       list.appendChild(li);
     });
   } catch (err) {

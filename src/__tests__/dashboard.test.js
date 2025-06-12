@@ -12,7 +12,7 @@ HTMLCanvasElement.prototype.getContext = jest.fn();
 
   test('fetchGoogleNews populates list with items', async () => {
     const mockData = { items: [ {title: 'Post 1', link: 'https://example.com'} ] };
-    fetch.mockResolvedValue({ json: () => Promise.resolve(mockData) });
+    fetch.mockResolvedValue({ ok: true, json: () => Promise.resolve(mockData) });
     document.body.innerHTML = '<ul id="google-news-list"></ul>';
     await fetchGoogleNews();
     expect(document.querySelectorAll('#google-news-list li').length).toBe(1);
@@ -23,8 +23,8 @@ HTMLCanvasElement.prototype.getContext = jest.fn();
     const fng = { data: [ {value: '40', timestamp: 1000000} ] };
     const btc = { prices: [ [1, 50000] ] };
     fetch
-      .mockResolvedValueOnce({ json: () => Promise.resolve(fng) })
-      .mockResolvedValueOnce({ json: () => Promise.resolve(btc) });
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(fng) })
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(btc) });
     global.Chart = jest.fn();
     document.body.innerHTML = '<div id="btc-fng-card"><canvas id="btcFngChart"></canvas><canvas id="fngGauge"></canvas></div>';
     await fetchBtcAndFng();
