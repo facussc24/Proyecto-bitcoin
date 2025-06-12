@@ -51,6 +51,7 @@
             </div>
           </div>
           <small id="prices-updated" class="text-muted d-block mt-2"></small>
+          <button id="refresh-prices" class="btn btn-sm btn-outline-primary mt-2">Actualizar</button>
           <p id="prices-error" class="text-danger mt-1"></p>
         </div>
       </div>
@@ -59,12 +60,14 @@
         <canvas id="fngGauge" height="200" aria-label="Fear &amp; Greed" role="img"></canvas>
         <div id="fng-label" class="fw-bold"></div>
         <small id="fng-updated" class="text-muted mt-1"></small>
+        <button id="refresh-fng" class="btn btn-sm btn-outline-primary mt-2">Actualizar</button>
         <p id="fng-error" class="text-danger"></p>
       </div>
       <div class="col-md-4">
         <h2 class="h6">ETH/BTC</h2>
         <canvas id="ethbtcChart" height="250" aria-label="ETH/BTC" role="img"></canvas>
         <small id="ethbtc-updated" class="text-muted d-block mt-1"></small>
+        <button id="refresh-ethbtc" class="btn btn-sm btn-outline-primary mt-2">Actualizar</button>
         <p id="ethbtc-error" class="text-danger"></p>
       </div>
     </div>
@@ -74,12 +77,14 @@
         <h2 class="h6">Volúmenes DEX 30d</h2>
         <canvas id="volumeChart" height="300" aria-label="Volúmenes DEX" role="img"></canvas>
         <small id="volume-updated" class="text-muted d-block mt-1"></small>
+        <button id="refresh-volumes" class="btn btn-sm btn-outline-primary mt-2">Actualizar</button>
         <p id="volume-error" class="text-danger"></p>
       </div>
       <div class="col-lg-4">
         <h2 class="h6">Últimas noticias</h2>
         <ul id="news-list" class="list-group"></ul>
         <small id="news-updated" class="text-muted d-block mt-1"></small>
+        <button id="refresh-news" class="btn btn-sm btn-outline-primary mt-2">Actualizar</button>
         <p id="news-error" class="text-danger"></p>
       </div>
     </div>
