@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editor de Componentes</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/flatly/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    .tree ul { list-style: none; padding-left: 1rem; }
+    .tree li { margin-bottom: 0.25rem; }
+    .tree button.add { margin-left: 0.5rem; }
+    .actions { margin-bottom: 1rem; }
+    #form-area { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <h1>Editor de Componentes</h1>
+    <div class="actions">
+      <button id="create-btn" class="btn btn-primary me-2">Crear</button>
+      <button id="delete-btn" class="btn btn-danger me-2">Eliminar</button>
+      <button id="edit-btn" class="btn btn-secondary">Modificar</button>
+    </div>
+    <div id="form-area"></div>
+    <div class="tree mt-4">
+      <ul id="tree-root"></ul>
+    </div>
+  </div>
+
+  <script type="module" src="assets/js/editor.js"></script>
+</body>
+</html>
