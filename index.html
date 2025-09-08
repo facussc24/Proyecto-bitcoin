@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Crypto Dashboard</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/flatly/bootstrap.min.css">
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
@@ -16,14 +15,12 @@
     <span id="progress-label">0 %</span>
   </div>
 
-  <header class="hero mb-4">
-    <div class="container">
-      <h1 class="display-4">Crypto Dashboard</h1>
-      <p class="lead">Precios, volúmenes y noticias</p>
-    </div>
+  <header>
+    <h1>Crypto Dashboard</h1>
+    <p class="sub">Precios, volúmenes y noticias</p>
   </header>
 
-  <main class="container">
+  <main>
     <section class="card">
       <h2>Precios</h2>
       <div id="prices-container" class="price-grid">
@@ -44,7 +41,7 @@
         </div>
       </div>
       <small id="prices-updated"></small>
-      <button id="refresh-prices" class="btn btn-outline-primary btn-sm">Actualizar</button>
+      <button id="refresh-prices" class="btn">Actualizar</button>
       <p id="prices-error" class="text-danger"></p>
     </section>
 
@@ -53,7 +50,7 @@
       <canvas id="fngGauge" height="180" aria-label="Fear &amp; Greed" role="img"></canvas>
       <div id="fng-label"></div>
       <small id="fng-updated"></small>
-      <button id="refresh-fng" class="btn btn-outline-primary btn-sm">Actualizar</button>
+      <button id="refresh-fng" class="btn">Actualizar</button>
       <p id="fng-error" class="text-danger"></p>
     </section>
 
@@ -61,7 +58,7 @@
       <h2>ETH/BTC</h2>
       <canvas id="ethbtcChart" height="250" aria-label="ETH/BTC" role="img"></canvas>
       <small id="ethbtc-updated"></small>
-      <button id="refresh-ethbtc" class="btn btn-outline-primary btn-sm">Actualizar</button>
+      <button id="refresh-ethbtc" class="btn">Actualizar</button>
       <p id="ethbtc-error" class="text-danger"></p>
     </section>
 
@@ -69,7 +66,7 @@
       <h2>Volúmenes DEX 30d</h2>
       <canvas id="volumeChart" height="300" aria-label="Volúmenes DEX" role="img"></canvas>
       <small id="volume-updated"></small>
-      <button id="refresh-volumes" class="btn btn-outline-primary btn-sm">Actualizar</button>
+      <button id="refresh-volumes" class="btn">Actualizar</button>
       <p id="volume-error" class="text-danger"></p>
     </section>
 
@@ -77,7 +74,7 @@
       <h2>Últimas noticias</h2>
       <ul id="news-list"></ul>
       <small id="news-updated"></small>
-      <button id="refresh-news" class="btn btn-outline-primary btn-sm">Actualizar</button>
+      <button id="refresh-news" class="btn">Actualizar</button>
       <p id="news-error" class="text-danger"></p>
     </section>
   </main>
